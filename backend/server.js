@@ -27,10 +27,16 @@ const allowedOrigins = [
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      return callback(new Error('CORS policy match error'), false);
+    
+    // Normalize origins by stripping trailing slashes for comparison
+    const cleanOrigin = origin.replace(/\/$/, '');
+    const cleanAllowed = allowedOrigins.map(o => o.replace(/\/$/, ''));
+    
+    if (cleanAllowed.includes(cleanOrigin) || cleanOrigin.endsWith('.vercel.app')) {
+      return callback(null, true);
     }
-    return callback(null, true);
+    
+    return callback(new Error(`CORS policy match error for origin: ${origin}`), false);
   },
   credentials: true
 }));
