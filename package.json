@@ -4,7 +4,7 @@
   "description": "Full stack OSM Tracker",
   "main": "backend/server.js",
   "scripts": {
-    "build": "cd backend && npm install && cd ../frontend && npm install && npm run build",
+    "build": "cd backend && npm install && cd ../frontend && npm install --include=dev && npm run build",
     "start": "node backend/server.js"
   }
 }
