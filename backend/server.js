@@ -47,14 +47,17 @@ app.use((req, res, next) => {
 
 const frontendPath = path.resolve(__dirname, "../frontend/dist");
 
-// 1. Serve static frontend built files first (Vite production assets in dist/assets)
+// 1. Explicitly serve static production JS/CSS assets from the dist/assets folder under /assets prefix
+app.use('/assets', express.static(path.resolve(frontendPath, 'assets')));
+
+// 2. Serve static frontend built files at the root / (for favicon.svg, icons.svg, etc.)
 app.use(express.static(frontendPath));
 
-// 2. Serve public dynamic uploads statically
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+// 3. Serve public dynamic uploads statically
+app.use('/uploads', express.static(path.resolve(__dirname, 'public/uploads')));
 
-// 3. Serve local source assets (for fallback default logos)
-app.use('/assets', express.static(path.join(__dirname, '../frontend/src/assets')));
+// 4. Serve local source assets (for fallback default logos)
+app.use('/assets', express.static(path.resolve(__dirname, '../frontend/src/assets')));
 
 // API Routes
 app.get('/api/users', protect, admin, getUsers);
