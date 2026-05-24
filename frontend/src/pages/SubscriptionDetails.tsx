@@ -5,6 +5,13 @@ import toast from 'react-hot-toast';
 import api from '../services/api';
 
 const SubscriptionDetails = () => {
+  const getLogoUrl = (logo?: string) => {
+    if (!logo) return '';
+    if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
+    const host = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:5000' : '';
+    return `${host}${logo}`;
+  };
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [subscription, setSubscription] = useState(null);
@@ -146,7 +153,7 @@ const SubscriptionDetails = () => {
             <div className="flex items-center gap-8">
               <div className="w-32 h-32 rounded-2xl bg-slate-900/60 backdrop-blur-sm flex items-center justify-center border border-white/10 overflow-hidden shadow-2xl shadow-black/30 group hover:scale-105 transition-transform duration-300">
                  {subscription.ottPlatformId?.logo ? (
-                  <img src={subscription.ottPlatformId.logo.startsWith('http') || subscription.ottPlatformId.logo.startsWith('data:') ? subscription.ottPlatformId.logo : `http://localhost:5000${subscription.ottPlatformId.logo}`} alt={subscription.ottPlatformId.name} className="w-full h-full object-contain bg-white" />
+                  <img src={getLogoUrl(subscription.ottPlatformId.logo)} alt={subscription.ottPlatformId.name} className="w-full h-full object-contain bg-white" />
                 ) : (
                   <span className="text-3xl font-bold text-slate-500">{subscription.ottPlatformId?.name?.charAt(0)}</span>
                 )}

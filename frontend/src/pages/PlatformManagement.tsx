@@ -25,6 +25,13 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 
 const PlatformManagement = () => {
+  const getLogoUrl = (logo?: string) => {
+    if (!logo) return '';
+    if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
+    const host = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:5000' : '';
+    return `${host}${logo}`;
+  };
+
   const [platforms, setPlatforms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -293,7 +300,7 @@ const PlatformManagement = () => {
                     <div className="w-16 h-16 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center p-2 group-hover:scale-105 transition-all duration-300 shadow-inner shrink-0 relative overflow-hidden">
                       {platform.logo ? (
                         <img 
-                          src={platform.logo.startsWith('http') || platform.logo.startsWith('data:') ? platform.logo : `http://localhost:5000${platform.logo}`} 
+                          src={getLogoUrl(platform.logo)} 
                           alt={platform.name} 
                           className="max-w-full max-h-full object-contain rounded-lg"
                           onError={(e) => {
@@ -412,7 +419,7 @@ const PlatformManagement = () => {
                 <div className="w-16 h-16 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center p-1.5 shrink-0 overflow-hidden shadow-inner">
                   {selectedAnalyticsPlatform.logo ? (
                     <img 
-                      src={selectedAnalyticsPlatform.logo.startsWith('http') || selectedAnalyticsPlatform.logo.startsWith('data:') ? selectedAnalyticsPlatform.logo : `http://localhost:5000${selectedAnalyticsPlatform.logo}`} 
+                      src={getLogoUrl(selectedAnalyticsPlatform.logo)} 
                       alt={selectedAnalyticsPlatform.name} 
                       className="max-w-full max-h-full object-contain" 
                     />
@@ -556,7 +563,7 @@ const PlatformManagement = () => {
                     <div className="flex items-center gap-3">
                       <div className="w-14 h-14 rounded-full bg-slate-950 border border-slate-700 flex items-center justify-center p-1.5 overflow-hidden shadow-inner shrink-0">
                         <img 
-                          src={formData.logo.startsWith('http') || formData.logo.startsWith('data:') ? formData.logo : `http://localhost:5000${formData.logo}`} 
+                          src={getLogoUrl(formData.logo)} 
                           alt="Platform Logo Preview" 
                           className="w-full h-full object-contain rounded-full"
                           onError={(e) => {

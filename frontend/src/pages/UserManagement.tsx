@@ -19,6 +19,13 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 
 const UserManagement = () => {
+  const getLogoUrl = (logo?: string) => {
+    if (!logo) return '';
+    if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
+    const host = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:5000' : '';
+    return `${host}${logo}`;
+  };
+
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -430,7 +437,7 @@ const UserManagement = () => {
                         <div className="flex items-center gap-3">
                           {sub.ottPlatformId?.logo ? (
                             <img 
-                              src={sub.ottPlatformId.logo.startsWith('http') || sub.ottPlatformId.logo.startsWith('data:') ? sub.ottPlatformId.logo : `http://localhost:5000${sub.ottPlatformId.logo}`} 
+                              src={getLogoUrl(sub.ottPlatformId.logo)} 
                               alt={sub.ottPlatformId.name} 
                               className="w-10 h-10 object-contain rounded-xl bg-slate-800 p-1 border border-slate-700" 
                               onError={(e) => { e.currentTarget.style.display = 'none'; }}

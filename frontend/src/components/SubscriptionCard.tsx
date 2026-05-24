@@ -4,6 +4,13 @@ import { Calendar } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const SubscriptionCard = ({ subscription }) => {
+  const getLogoUrl = (logo?: string) => {
+    if (!logo) return '';
+    if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
+    const host = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:5000' : '';
+    return `${host}${logo}`;
+  };
+
   const { searchQuery } = useAuth();
   const { _id, ottPlatformId, planName, expiryDate, status, subscriptionCost } = subscription;
 
@@ -59,7 +66,7 @@ const SubscriptionCard = ({ subscription }) => {
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-900/60 backdrop-blur-sm p-1 flex items-center justify-center border border-white/10 group-hover:border-white/20 transition-all duration-300 group-hover:scale-110">
             {ottPlatformId?.logo ? (
-              <img src={ottPlatformId.logo.startsWith('http') || ottPlatformId.logo.startsWith('data:') ? ottPlatformId.logo : `http://localhost:5000${ottPlatformId.logo}`} alt={ottPlatformId.name} className="w-full h-full object-contain rounded-lg" />
+              <img src={getLogoUrl(ottPlatformId.logo)} alt={ottPlatformId.name} className="w-full h-full object-contain rounded-lg" />
             ) : (
               <div className="text-xs text-center text-slate-400">{ottPlatformId?.name}</div>
             )}

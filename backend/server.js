@@ -48,6 +48,14 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
 
+// Serve Frontend static assets
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+// Fallback wildcard route to serve React SPA
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
+
 // Global Error Handler
 app.use(errorHandler);
 

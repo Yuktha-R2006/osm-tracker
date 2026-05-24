@@ -4,6 +4,13 @@ import toast from 'react-hot-toast';
 import api from '../services/api';
 
 const AddSubscriptionModal = ({ isOpen, onClose, onAdd }) => {
+  const getLogoUrl = (logo?: string) => {
+    if (!logo) return '';
+    if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
+    const host = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:5000' : '';
+    return `${host}${logo}`;
+  };
+
   const [platforms, setPlatforms] = useState([]);
   const [formData, setFormData] = useState({
     ottPlatformId: '',
@@ -207,7 +214,7 @@ const AddSubscriptionModal = ({ isOpen, onClose, onAdd }) => {
                         }`}
                       >
                         <div className="w-8 h-8 rounded-full overflow-hidden bg-white/5 flex items-center justify-center">
-                           {platform.logo ? <img src={platform.logo.startsWith('http') || platform.logo.startsWith('data:') ? platform.logo : `http://localhost:5000${platform.logo}`} alt={platform.name} className="w-full h-full object-contain" /> : <span className="text-xs">{platform.name.charAt(0)}</span>}
+                           {platform.logo ? <img src={getLogoUrl(platform.logo)} alt={platform.name} className="w-full h-full object-contain" /> : <span className="text-xs">{platform.name.charAt(0)}</span>}
                         </div>
                         <span className="text-[10px] text-center text-slate-300 truncate w-full">{platform.name}</span>
                       </div>
