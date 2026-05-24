@@ -35,12 +35,27 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Static File Serving
+// Prevent browser caching of SPA entry HTML to avoid stale compiled asset requests
+app.use((req, res, next) => {
+  if (req.path === '/' || req.path === '/index.html') {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  }
+  next();
+});
+
 const path = require('path');
-app.use('/assets', express.static(path.join(__dirname, '../frontend/src/assets')));
+const frontendPath = path.join(__dirname, "../frontend/dist");
+
+// 1. Serve static frontend built files first (Vite production assets in dist/assets)
+app.use(express.static(frontendPath));
+
+// 2. Serve public dynamic uploads statically
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-// Routes
+// 3. Serve local source assets (for fallback default logos)
+app.use('/assets', express.static(path.join(__dirname, '../frontend/src/assets')));
+
+// API Routes
 app.get('/api/users', protect, admin, getUsers);
 app.use('/api/auth', authRoutes);
 app.use('/api/platforms', platformRoutes);
@@ -48,24 +63,18 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
 
-// Frontend build directory
-const frontendPath = path.join(__dirname, "../frontend/dist");
-
-// Serve static frontend files
-app.use(express.static(frontendPath));
-
-// React SPA fallback
-app.use((req, res, next) => {
+// Catch-all route to serve the React SPA for UI routes, returning proper 404 JSON for static/API misses
+app.get("*", (req, res) => {
   if (
     req.path.startsWith("/api") ||
     req.path.startsWith("/uploads") ||
     req.path.startsWith("/assets")
   ) {
-    return next();
+    return res.status(404).json({ message: `Not Found: ${req.originalUrl}` });
   }
-
   res.sendFile(path.join(frontendPath, "index.html"));
 });
+
 // Global Error Handler
 app.use(errorHandler);
 
