@@ -51,9 +51,18 @@ app.use('/api/notifications', notificationRoutes);
 // Serve Frontend static assets
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-// Fallback wildcard route to serve React SPA
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+// React SPA fallback route
+app.get("*", (req, res) => {
+  // Ignore API routes
+  if (req.path.startsWith("/api")) {
+    return res.status(404).json({
+      message: "API route not found"
+    });
+  }
+
+  res.sendFile(
+    path.join(__dirname, "../frontend/dist/index.html")
+  );
 });
 
 // Global Error Handler
