@@ -48,23 +48,24 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
 
-// Serve Frontend static assets
-app.use(express.static(path.join(__dirname, "../frontend/dist")));
+// Frontend build directory
+const frontendPath = path.join(__dirname, "../frontend/dist");
 
-// React SPA fallback route
-app.get("*", (req, res) => {
-  // Ignore API routes
-  if (req.path.startsWith("/api")) {
-    return res.status(404).json({
-      message: "API route not found"
-    });
+// Serve static frontend files
+app.use(express.static(frontendPath));
+
+// React SPA fallback
+app.use((req, res, next) => {
+  if (
+    req.path.startsWith("/api") ||
+    req.path.startsWith("/uploads") ||
+    req.path.startsWith("/assets")
+  ) {
+    return next();
   }
 
-  res.sendFile(
-    path.join(__dirname, "../frontend/dist/index.html")
-  );
+  res.sendFile(path.join(frontendPath, "index.html"));
 });
-
 // Global Error Handler
 app.use(errorHandler);
 
