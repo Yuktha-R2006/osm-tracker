@@ -45,19 +45,8 @@ app.use((req, res, next) => {
 });
 
 
-const frontendPath = path.resolve(__dirname, "../frontend/dist");
-
-// 1. Explicitly serve static production JS/CSS assets from the dist/assets folder under /assets prefix
-app.use('/assets', express.static(path.resolve(frontendPath, 'assets')));
-
-// 2. Serve static frontend built files at the root / (for favicon.svg, icons.svg, etc.)
-app.use(express.static(frontendPath));
-
-// 3. Serve public dynamic uploads statically
+// Serve public dynamic uploads statically (platform logos)
 app.use('/uploads', express.static(path.resolve(__dirname, 'public/uploads')));
-
-// 4. Serve local source assets (for fallback default logos)
-app.use('/assets', express.static(path.resolve(__dirname, '../frontend/src/assets')));
 
 // API Routes
 app.get('/api/users', protect, admin, getUsers);
@@ -67,19 +56,11 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
 
-// Catch-all route to serve the React SPA for UI routes, returning proper 404 JSON for static/API misses
+// Catch-all route to return JSON 404 for all unmatched API endpoints
 app.use((req, res) => {
-  if (
-    req.path.startsWith("/api") ||
-    req.path.startsWith("/uploads") ||
-    req.path.startsWith("/assets")
-  ) {
-    return res.status(404).json({
-      message: `Not Found: ${req.originalUrl}`,
-    });
-  }
-
-  res.sendFile(path.resolve(frontendPath, "index.html"));
+  res.status(404).json({
+    message: `API Endpoint Not Found: ${req.originalUrl}`,
+  });
 });
 
 // Global Error Handler

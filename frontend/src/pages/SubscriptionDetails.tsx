@@ -8,8 +8,12 @@ const SubscriptionDetails = () => {
   const getLogoUrl = (logo?: string) => {
     if (!logo) return '';
     if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
-    const host = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:5000' : '';
-    return `${host}${logo}`;
+    const apiUrl = (import.meta as any).env.VITE_API_URL || 'http://localhost:5000/api';
+    const backendUrl = apiUrl.replace(/\/api$/, '');
+    if (logo.startsWith('/uploads')) {
+      return `${backendUrl}${logo}`;
+    }
+    return logo;
   };
 
   const { id } = useParams();
