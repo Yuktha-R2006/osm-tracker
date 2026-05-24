@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require("path");
 
 const authRoutes = require('./routes/auth');
 const platformRoutes = require('./routes/platforms');
@@ -43,8 +44,8 @@ app.use((req, res, next) => {
   next();
 });
 
-const path = require('path');
-const frontendPath = path.join(__dirname, "../frontend/dist");
+
+const frontendPath = path.resolve(__dirname, "../frontend/dist");
 
 // 1. Serve static frontend built files first (Vite production assets in dist/assets)
 app.use(express.static(frontendPath));
@@ -64,15 +65,18 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
 
 // Catch-all route to serve the React SPA for UI routes, returning proper 404 JSON for static/API misses
-app.get("*", (req, res) => {
+app.use((req, res) => {
   if (
     req.path.startsWith("/api") ||
     req.path.startsWith("/uploads") ||
     req.path.startsWith("/assets")
   ) {
-    return res.status(404).json({ message: `Not Found: ${req.originalUrl}` });
+    return res.status(404).json({
+      message: `Not Found: ${req.originalUrl}`,
+    });
   }
-  res.sendFile(path.join(frontendPath, "index.html"));
+
+  res.sendFile(path.resolve(frontendPath, "index.html"));
 });
 
 // Global Error Handler
