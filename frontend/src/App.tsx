@@ -6,6 +6,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { NotificationProvider } from './context/NotificationContext';
 
 function App() {
+  // Production unified build deployment accent
   return (
     <AuthProvider>
       <ThemeProvider>
