@@ -58,6 +58,22 @@ const frontendPath = path.join(__dirname, "../frontend/dist");
 app.use(express.static(frontendPath));
 
 // API Routes
+app.get('/api/debug-files', (req, res) => {
+  const fs = require('fs');
+  const dir = path.join(__dirname, "../frontend/dist");
+  try {
+    const files = fs.readdirSync(dir);
+    let assets = [];
+    try {
+      assets = fs.readdirSync(path.join(dir, 'assets'));
+    } catch (e) {
+      assets = [e.message];
+    }
+    res.json({ success: true, dir, files, assets });
+  } catch (err) {
+    res.json({ success: false, dir, error: err.message });
+  }
+});
 app.get('/api/users', protect, admin, getUsers);
 app.use('/api/auth', authRoutes);
 app.use('/api/platforms', platformRoutes);
