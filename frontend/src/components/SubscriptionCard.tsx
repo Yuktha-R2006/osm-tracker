@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
+import API_URL from '../config/api';
+
 const SubscriptionCard = ({ subscription }) => {
   const getLogoUrl = (logo?: string) => {
     if (!logo) return '';
     if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
-    const apiUrl = (import.meta as any).env.VITE_API_URL || '/api';
-    const backendUrl = apiUrl.replace(/\/api$/, '');
+    const backendUrl = API_URL.replace(/\/api$/, '');
     if (logo.startsWith('/uploads')) {
       return `${backendUrl}${logo}`;
     }

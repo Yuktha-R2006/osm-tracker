@@ -72,21 +72,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string, role?: 'user' | 'admin'): Promise<any> => {
     const res = await api.post('/auth/login', { email, password, role });
-    localStorage.setItem('token', res.data.accessToken);
-    localStorage.setItem('accessToken', res.data.accessToken);
+    const token = res.data.token || res.data.accessToken;
+    localStorage.setItem('token', token);
+    localStorage.setItem('accessToken', token);
     localStorage.setItem('refreshToken', res.data.refreshToken);
-    setUser(res.data);
-    setToken(res.data.accessToken);
+    localStorage.setItem('user', JSON.stringify(res.data.user || res.data));
+    setUser(res.data.user || res.data);
+    setToken(token);
     return res.data;
   };
 
   const register = async (name: string, email: string, password: string): Promise<any> => {
     const res = await api.post('/auth/register', { name, email, password });
-    localStorage.setItem('token', res.data.accessToken);
-    localStorage.setItem('accessToken', res.data.accessToken);
+    const token = res.data.token || res.data.accessToken;
+    localStorage.setItem('token', token);
+    localStorage.setItem('accessToken', token);
     localStorage.setItem('refreshToken', res.data.refreshToken);
-    setUser(res.data);
-    setToken(res.data.accessToken);
+    localStorage.setItem('user', JSON.stringify(res.data.user || res.data));
+    setUser(res.data.user || res.data);
+    setToken(token);
     return res.data;
   };
 
@@ -94,6 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('token');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
     setUser(null);
     setToken(null);
   };

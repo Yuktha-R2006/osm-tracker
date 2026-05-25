@@ -17,13 +17,13 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import API_URL from '../config/api';
 
 const UserManagement = () => {
   const getLogoUrl = (logo?: string) => {
     if (!logo) return '';
     if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
-    const apiUrl = (import.meta as any).env.VITE_API_URL || '/api';
-    const backendUrl = apiUrl.replace(/\/api$/, '');
+    const backendUrl = API_URL.replace(/\/api$/, '');
     if (logo.startsWith('/uploads')) {
       return `${backendUrl}${logo}`;
     }
