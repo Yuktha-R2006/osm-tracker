@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { X, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
-import API_URL from '../config/api';
 
 const AddSubscriptionModal = ({ isOpen, onClose, onAdd }) => {
   const getLogoUrl = (logo?: string) => {
     if (!logo) return '';
     if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
-    const backendUrl = API_URL.replace(/\/api$/, '');
+    const apiUrl = (import.meta as any).env.VITE_API_URL || '/api';
+    const backendUrl = apiUrl.replace(/\/api$/, '');
     if (logo.startsWith('/uploads')) {
       return `${backendUrl}${logo}`;
     }

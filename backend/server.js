@@ -19,35 +19,80 @@ const app = express();
 
 // Middleware
 const allowedOrigins = [
-  process.env.CLIENT_URL,
-  'https://YOUR-FRONTEND-VERCEL.vercel.app',
   'http://localhost:5173',
-  'http://127.0.0.1:5173'
+  'http://127.0.0.1:5173',
+  process.env.FRONTEND_URL
 ].filter(Boolean);
 
 app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+
+    // Normalize origins by stripping trailing slashes for comparison
+    const cleanOrigin = origin.replace(/\/$/, '');
+    const cleanAllowed = allowedOrigins.map(o => o.replace(/\/$/, ''));
+
+    if (cleanAllowed.includes(cleanOrigin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS policy match error for origin: ${origin}`), false);
+  },
+  credentials: true
 }));
 app.use(express.json());
+
+// Prevent browser caching of SPA entry HTML to avoid stale compiled asset requests
+app.use((req, res, next) => {
+  if (req.path === '/' || req.path === '/index.html') {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  }
+  next();
+});
 
 // Serve public dynamic uploads statically (platform logos)
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
+// Serve frontend static assets
+const frontendPath = path.join(__dirname, "../frontend/dist");
+app.use(express.static(frontendPath));
+
+// Explicitly handle missing assets so they don't fallback to index.html or return JSON 404
+app.use('/assets', (req, res) => {
+  res.status(404).send('Asset Not Found');
+});
+
 // API Routes
 app.get('/api/users', protect, admin, getUsers);
-console.log("Auth routes mounted at /api/auth");
 app.use('/api/auth', authRoutes);
 app.use('/api/platforms', platformRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
 
+// Frontend fallback serving for client-side routing (React Router)
+app.use((req, res, next) => {
+  // Exclude API, uploads, assets, and any paths that look like static files (have an extension)
+  if (
+    req.path.startsWith("/api") ||
+    req.path.startsWith("/uploads") ||
+    req.path.startsWith("/assets") ||
+    path.extname(req.path)
+  ) {
+    return next();
+  }
+
+  // Prevent browser caching of index.html so it always requests the latest built assets
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.sendFile(path.join(frontendPath, "index.html"), (err) => {
+    if (err) {
+      next();
+    }
+  });
+});
+
 // Catch-all route to return JSON 404 for all unmatched API endpoints
 app.use((req, res) => {
-  console.log("404 route reached:", req.originalUrl);
   res.status(404).json({
     message: `API Endpoint Not Found: ${req.originalUrl}`,
   });

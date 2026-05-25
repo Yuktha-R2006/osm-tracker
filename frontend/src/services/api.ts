@@ -1,20 +1,16 @@
 import axios from 'axios';
-import API_URL from '../config/api';
 
-// Add global axios auth interceptor
-axios.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+const getBaseUrl = () => {
+  let url = (import.meta as any).env.VITE_API_URL || '/api';
+  url = url.trim().replace(/\/$/, ''); // strip trailing slash
+  if (!url.endsWith('/api')) {
+    url = `${url}/api`;
+  }
+  return url;
+};
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: getBaseUrl(),
 });
 
 // Add a request interceptor

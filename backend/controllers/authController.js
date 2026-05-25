@@ -35,15 +35,14 @@ const registerUser = async (req, res, next) => {
     });
 
     if (user) {
-      const { accessToken } = generateTokens(user._id, user.role);
+      const { accessToken, refreshToken } = generateTokens(user._id, user.role);
       res.status(201).json({
-        token: accessToken,
-        user: {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role
-        }
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        accessToken,
+        refreshToken
       });
     } else {
       res.status(400).json({ message: 'Invalid user data' });
@@ -57,11 +56,8 @@ const registerUser = async (req, res, next) => {
 // @route   POST /api/auth/login
 // @access  Public
 const loginUser = async (req, res, next) => {
-  console.log("LOGIN ROUTE HIT");
-  console.log(req.body);
   try {
     const { email, password, role } = req.body;
-    console.log('Login attempt for email:', email);
 
     // Admin login with hard-coded credentials
     if (role === 'admin') {
@@ -82,15 +78,14 @@ const loginUser = async (req, res, next) => {
         });
       }
       
-      const { accessToken } = generateTokens(adminUser._id, adminUser.role);
+      const { accessToken, refreshToken } = generateTokens(adminUser._id, adminUser.role);
       res.json({
-        token: accessToken,
-        user: {
-          _id: adminUser._id,
-          name: adminUser.name,
-          email: adminUser.email,
-          role: adminUser.role
-        }
+        _id: adminUser._id,
+        name: adminUser.name,
+        email: adminUser.email,
+        role: adminUser.role,
+        accessToken,
+        refreshToken
       });
       return;
     }
@@ -104,16 +99,15 @@ const loginUser = async (req, res, next) => {
         return res.status(403).json({ message: 'Invalid user credentials' });
       }
       
-      const { accessToken } = generateTokens(user._id, user.role);
+      const { accessToken, refreshToken } = generateTokens(user._id, user.role);
       
       res.json({
-        token: accessToken,
-        user: {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role
-        }
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        accessToken,
+        refreshToken
       });
     } else {
       res.status(401).json({ message: 'Invalid user credentials' });

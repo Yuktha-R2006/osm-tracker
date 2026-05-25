@@ -72,25 +72,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string, role?: 'user' | 'admin'): Promise<any> => {
     const res = await api.post('/auth/login', { email, password, role });
-    if (!res.data.token) {
-      console.error("Token missing from login response");
-    }
-    localStorage.setItem('token', res.data.token);
-    localStorage.setItem('user', JSON.stringify(res.data.user));
-    setUser(res.data.user);
-    setToken(res.data.token);
+    localStorage.setItem('token', res.data.accessToken);
+    localStorage.setItem('accessToken', res.data.accessToken);
+    localStorage.setItem('refreshToken', res.data.refreshToken);
+    setUser(res.data);
+    setToken(res.data.accessToken);
     return res.data;
   };
 
   const register = async (name: string, email: string, password: string): Promise<any> => {
     const res = await api.post('/auth/register', { name, email, password });
-    if (!res.data.token) {
-      console.error("Token missing from login response");
-    }
-    localStorage.setItem('token', res.data.token);
-    localStorage.setItem('user', JSON.stringify(res.data.user));
-    setUser(res.data.user);
-    setToken(res.data.token);
+    localStorage.setItem('token', res.data.accessToken);
+    localStorage.setItem('accessToken', res.data.accessToken);
+    localStorage.setItem('refreshToken', res.data.refreshToken);
+    setUser(res.data);
+    setToken(res.data.accessToken);
     return res.data;
   };
 
@@ -98,7 +94,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('token');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
     setUser(null);
     setToken(null);
   };
