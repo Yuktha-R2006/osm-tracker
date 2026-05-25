@@ -61,6 +61,7 @@ const loginUser = async (req, res, next) => {
   console.log(req.body);
   try {
     const { email, password, role } = req.body;
+    console.log('Login attempt for email:', email);
 
     // Admin login with hard-coded credentials
     if (role === 'admin') {
