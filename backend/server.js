@@ -27,15 +27,15 @@ const allowedOrigins = [
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    
+
     // Normalize origins by stripping trailing slashes for comparison
     const cleanOrigin = origin.replace(/\/$/, '');
     const cleanAllowed = allowedOrigins.map(o => o.replace(/\/$/, ''));
-    
+
     if (cleanAllowed.includes(cleanOrigin)) {
       return callback(null, true);
     }
-    
+
     return callback(new Error(`CORS policy match error for origin: ${origin}`), false);
   },
   credentials: true
@@ -58,9 +58,7 @@ const frontendPath = path.join(__dirname, "../frontend/dist");
 app.use(express.static(frontendPath));
 
 // Explicitly handle missing assets so they don't fallback to index.html or return JSON 404
-app.use('/assets', (req, res) => {
-  res.status(404).send('Asset Not Found');
-});
+app.use('/assets', express.static(path.join(frontendPath, 'assets')));
 
 // API Routes
 app.get('/api/users', protect, admin, getUsers);
