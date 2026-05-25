@@ -44,13 +44,13 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token') || localStorage.getItem('accessToken'));
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
     const fetchUser = async () => {
-      const storedToken = localStorage.getItem('token') || localStorage.getItem('accessToken');
+      const storedToken = localStorage.getItem('token');
       if (storedToken) {
         try {
           const res = await api.get('/auth/profile');

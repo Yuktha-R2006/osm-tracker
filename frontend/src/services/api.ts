@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const getBaseUrl = () => {
-  let url = (import.meta as any).env.VITE_API_URL || 'https://osm-tracker.onrender.com/api';
+  let url = (import.meta as any).env.VITE_API_URL || '/api';
   url = url.trim().replace(/\/$/, ''); // strip trailing slash
   if (!url.endsWith('/api')) {
     url = `${url}/api`;
@@ -16,7 +16,7 @@ const api = axios.create({
 // Add a request interceptor
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token') || localStorage.getItem('accessToken');
+    const token = localStorage.getItem('token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }

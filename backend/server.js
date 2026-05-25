@@ -32,7 +32,7 @@ app.use(cors({
     const cleanOrigin = origin.replace(/\/$/, '');
     const cleanAllowed = allowedOrigins.map(o => o.replace(/\/$/, ''));
     
-    if (cleanAllowed.includes(cleanOrigin) || cleanOrigin.endsWith('.vercel.app')) {
+    if (cleanAllowed.includes(cleanOrigin)) {
       return callback(null, true);
     }
     
@@ -50,9 +50,12 @@ app.use((req, res, next) => {
   next();
 });
 
-
 // Serve public dynamic uploads statically (platform logos)
-app.use('/uploads', express.static(path.resolve(__dirname, 'public/uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+// Serve frontend static assets
+const frontendPath = path.join(__dirname, "../frontend/dist");
+app.use(express.static(frontendPath));
 
 // API Routes
 app.get('/api/users', protect, admin, getUsers);
@@ -61,6 +64,19 @@ app.use('/api/platforms', platformRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
+
+// Frontend fallback serving
+app.use((req, res, next) => {
+  if (
+    req.path.startsWith("/api") ||
+    req.path.startsWith("/uploads") ||
+    req.path.startsWith("/assets")
+  ) {
+    return next();
+  }
+
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
 
 // Catch-all route to return JSON 404 for all unmatched API endpoints
 app.use((req, res) => {
