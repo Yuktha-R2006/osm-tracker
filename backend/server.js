@@ -38,6 +38,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // API Routes
 app.get('/api/users', protect, admin, getUsers);
+console.log("Auth routes mounted at /api/auth");
 app.use('/api/auth', authRoutes);
 app.use('/api/platforms', platformRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
@@ -46,6 +47,7 @@ app.use('/api/notifications', notificationRoutes);
 
 // Catch-all route to return JSON 404 for all unmatched API endpoints
 app.use((req, res) => {
+  console.log("404 route reached:", req.originalUrl);
   res.status(404).json({
     message: `API Endpoint Not Found: ${req.originalUrl}`,
   });
