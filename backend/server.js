@@ -57,6 +57,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 const frontendPath = path.join(__dirname, "../frontend/dist");
 app.use(express.static(frontendPath));
 
+// Explicitly handle missing assets so they don't fallback to index.html or return JSON 404
+app.use('/assets', (req, res) => {
+  res.status(404).send('Asset Not Found');
+});
+
 // API Routes
 app.get('/api/users', protect, admin, getUsers);
 app.use('/api/auth', authRoutes);
@@ -65,17 +70,25 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
 
-// Frontend fallback serving
+// Frontend fallback serving for client-side routing (React Router)
 app.use((req, res, next) => {
+  // Exclude API, uploads, assets, and any paths that look like static files (have an extension)
   if (
     req.path.startsWith("/api") ||
     req.path.startsWith("/uploads") ||
-    req.path.startsWith("/assets")
+    req.path.startsWith("/assets") ||
+    path.extname(req.path)
   ) {
     return next();
   }
 
-  res.sendFile(path.join(frontendPath, "index.html"));
+  // Prevent browser caching of index.html so it always requests the latest built assets
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.sendFile(path.join(frontendPath, "index.html"), (err) => {
+    if (err) {
+      next();
+    }
+  });
 });
 
 // Catch-all route to return JSON 404 for all unmatched API endpoints
