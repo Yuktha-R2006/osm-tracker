@@ -6,7 +6,8 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "allowJs": true
+    "allowJs": true,
+    "outDir": "node_modules/.tmp"
   },
   "include": ["vite.config.js"]
 }
