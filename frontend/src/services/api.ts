@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const getBaseUrl = () => {
-  let url = (import.meta as any).env.VITE_API_URL || 'http://localhost:5000/api';
+  let url = (import.meta as any).env.VITE_API_URL || 'https://osm-tracker.onrender.com/api';
   url = url.trim().replace(/\/$/, ''); // strip trailing slash
   if (!url.endsWith('/api')) {
     url = `${url}/api`;
@@ -16,7 +16,7 @@ const api = axios.create({
 // Add a request interceptor
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('token') || localStorage.getItem('accessToken');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -31,7 +31,7 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       const refreshToken = localStorage.getItem('refreshToken');
       
@@ -41,6 +41,7 @@ api.interceptors.response.use(
           
           if (res.status === 200) {
             localStorage.setItem('accessToken', res.data.accessToken);
+            localStorage.setItem('token', res.data.accessToken);
             localStorage.setItem('refreshToken', res.data.refreshToken);
             
             api.defaults.headers.common['Authorization'] = `Bearer ${res.data.accessToken}`;
@@ -49,6 +50,7 @@ api.interceptors.response.use(
         } catch (err) {
           // If refresh token fails, clear storage and logout
           localStorage.removeItem('accessToken');
+          localStorage.removeItem('token');
           localStorage.removeItem('refreshToken');
           window.location.href = '/login';
         }

@@ -8,7 +8,7 @@ const SubscriptionDetails = () => {
   const getLogoUrl = (logo?: string) => {
     if (!logo) return '';
     if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
-    const apiUrl = (import.meta as any).env.VITE_API_URL || 'http://localhost:5000/api';
+    const apiUrl = (import.meta as any).env.VITE_API_URL || 'https://osm-tracker.onrender.com/api';
     const backendUrl = apiUrl.replace(/\/api$/, '');
     if (logo.startsWith('/uploads')) {
       return `${backendUrl}${logo}`;
