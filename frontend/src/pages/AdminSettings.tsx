@@ -114,7 +114,7 @@ const AdminSettings: React.FC = () => {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-          Admin Settings <span className="text-xs font-semibold px-2 py-0.5 bg-[#ff0055]/10 text-[#ff0055] rounded border border-[#ff0055]/20">Console</span>
+          Admin Settings <span className="text-xs font-semibold px-2 py-0.5 bg-primary/10 text-primary rounded border border-primary/20">Console</span>
         </h1>
         <p className="text-slate-400 mt-1">Configure telemetry settings, trigger mock system crons, and manage credentials.</p>
       </div>
@@ -126,12 +126,12 @@ const AdminSettings: React.FC = () => {
           
           {/* Cron Simulation Board */}
           <div className="glass-panel p-6 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#00f0ff]/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full blur-3xl pointer-events-none"></div>
             
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Database className="text-[#00f0ff]" size={20} />
+                  <Database className="text-secondary" size={20} />
                   Simulate System Cron Jobs
                 </h3>
                 <p className="text-xs text-slate-400">Trigger background checks on subscription expiration & auto-billing rules</p>
@@ -142,7 +142,7 @@ const AdminSettings: React.FC = () => {
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold shadow-md cursor-pointer transition-all duration-300 ${
                   isSimulating 
                     ? 'bg-slate-700 text-slate-500 cursor-not-allowed border border-transparent' 
-                    : 'bg-gradient-to-r from-[#00f0ff] to-[#00d0e6] hover:shadow-[0_0_15px_rgba(0,240,255,0.3)] text-slate-900 border border-transparent'
+                    : 'bg-linear-to-r from-secondary to-cyan-500 hover:shadow-[0_0_15px_rgba(0,240,255,0.3)] text-slate-900 border border-transparent'
                 }`}
               >
                 {isSimulating ? <RefreshCw className="animate-spin" size={16} /> : <Play size={16} />}
@@ -167,15 +167,15 @@ const AdminSettings: React.FC = () => {
                     animate={{ opacity: 1, x: 0 }}
                     className="flex gap-2 items-start"
                   >
-                    <span className="text-[#00f0ff] shrink-0">&gt;</span>
+                    <span className="text-secondary shrink-0">&gt;</span>
                     <span>{log}</span>
                   </motion.div>
                 ))}
               </AnimatePresence>
 
               {isSimulating && (
-                <div className="flex items-center gap-1.5 mt-2 animate-pulse text-[#00f0ff]">
-                  <span className="w-2 h-2 rounded-full bg-[#00f0ff]"></span>
+                <div className="flex items-center gap-1.5 mt-2 animate-pulse text-secondary">
+                  <span className="w-2 h-2 rounded-full bg-secondary"></span>
                   <span>Executing step {simStep}...</span>
                 </div>
               )}
@@ -185,7 +185,7 @@ const AdminSettings: React.FC = () => {
           {/* System Sliders & Toggles */}
           <div className="glass-panel p-6">
             <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-              <Sliders className="text-[#ff0055]" size={20} />
+              <Sliders className="text-primary" size={20} />
               Telemetry Configurations
             </h3>
 
@@ -195,7 +195,7 @@ const AdminSettings: React.FC = () => {
               <div className="bg-slate-900/40 p-4 rounded-xl border border-white/5">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-semibold text-white">Expiration Warning Window</span>
-                  <span className="text-sm font-bold text-[#00f0ff]">{alertThreshold} days</span>
+                  <span className="text-sm font-bold text-secondary">{alertThreshold} days</span>
                 </div>
                 <input 
                   type="range" 
@@ -203,7 +203,7 @@ const AdminSettings: React.FC = () => {
                   max="30" 
                   value={alertThreshold}
                   onChange={(e) => setAlertThreshold(parseInt(e.target.value))}
-                  className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-[#00f0ff]" 
+                  className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-secondary" 
                 />
                 <p className="text-[10px] text-slate-500 mt-2">Days before sub expires when automated notifications are dispatched to normal users.</p>
               </div>
@@ -212,7 +212,7 @@ const AdminSettings: React.FC = () => {
               <div className="bg-slate-900/40 p-4 rounded-xl border border-white/5">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-semibold text-white">Admin Session Timeout</span>
-                  <span className="text-sm font-bold text-[#ff0055]">{sessionTimeout} minutes</span>
+                  <span className="text-sm font-bold text-primary">{sessionTimeout} minutes</span>
                 </div>
                 <input 
                   type="range" 
@@ -221,7 +221,7 @@ const AdminSettings: React.FC = () => {
                   step="5"
                   value={sessionTimeout}
                   onChange={(e) => setSessionTimeout(parseInt(e.target.value))}
-                  className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-[#ff0055]" 
+                  className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary" 
                 />
                 <p className="text-[10px] text-slate-500 mt-2">Inactivity threshold before the control console logs out standard admin accounts.</p>
               </div>
@@ -237,7 +237,7 @@ const AdminSettings: React.FC = () => {
                     type="checkbox" 
                     checked={enableAlerts}
                     onChange={(e) => setEnableAlerts(e.target.checked)}
-                    className="w-9 h-5 bg-slate-800 checked:bg-[#00f0ff] rounded-full appearance-none relative after:absolute after:top-[2px] after:left-[2px] after:w-4 after:h-4 after:bg-slate-400 after:rounded-full after:transition-all checked:after:translate-x-4 checked:after:bg-[#0f172a] cursor-pointer"
+                    className="w-9 h-5 bg-slate-800 checked:bg-secondary rounded-full appearance-none relative after:absolute after:top-[2px] after:left-[2px] after:w-4 after:h-4 after:bg-slate-400 after:rounded-full after:transition-all checked:after:translate-x-4 checked:after:bg-[#0f172a] cursor-pointer"
                   />
                 </label>
 
@@ -250,7 +250,7 @@ const AdminSettings: React.FC = () => {
                     type="checkbox" 
                     checked={debugLogs}
                     onChange={(e) => setDebugLogs(e.target.checked)}
-                    className="w-9 h-5 bg-slate-800 checked:bg-[#ff0055] rounded-full appearance-none relative after:absolute after:top-[2px] after:left-[2px] after:w-4 after:h-4 after:bg-slate-400 after:rounded-full after:transition-all checked:after:translate-x-4 checked:after:bg-[#0f172a] cursor-pointer"
+                    className="w-9 h-5 bg-slate-800 checked:bg-primary rounded-full appearance-none relative after:absolute after:top-[2px] after:left-[2px] after:w-4 after:h-4 after:bg-slate-400 after:rounded-full after:transition-all checked:after:translate-x-4 checked:after:bg-[#0f172a] cursor-pointer"
                   />
                 </label>
               </div>

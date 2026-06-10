@@ -6,7 +6,8 @@ const OTTPlatform = require('./models/OTTPlatform');
 
 async function checkDb() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    const connStr = process.env.MONGO_URI || process.env.MONGODB_URI;
+    await mongoose.connect(connStr);
     console.log('Connected to DB');
 
     const totalUsers = await User.countDocuments({ role: 'user' });

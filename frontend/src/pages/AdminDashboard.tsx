@@ -156,7 +156,7 @@ const AdminDashboard = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-40">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00f0ff]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary"></div>
         <p className="text-slate-400 mt-4 animate-pulse">Loading dashboard telemetry...</p>
       </div>
     );
@@ -168,13 +168,13 @@ const AdminDashboard = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-            Admin Dashboard <span className="text-xs font-semibold px-2 py-0.5 bg-[#00f0ff]/10 text-[#00f0ff] rounded border border-[#00f0ff]/20">Control Center</span>
+            Admin Dashboard <span className="text-xs font-semibold px-2 py-0.5 bg-secondary/10 text-secondary rounded border border-secondary/20">Control Center</span>
           </h1>
           <p className="text-slate-400 mt-1">Real-time stats, service trends, and OTT subscription analytics.</p>
         </div>
         <button 
           onClick={fetchStats}
-          className="flex items-center gap-2 px-4 py-2 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-white rounded-xl text-sm font-medium transition-all duration-300 shadow-md cursor-pointer hover:border-[#00f0ff]/50 hover:shadow-[0_0_10px_rgba(0,240,255,0.2)]"
+          className="flex items-center gap-2 px-4 py-2 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-white rounded-xl text-sm font-medium transition-all duration-300 shadow-md cursor-pointer hover:border-secondary/50 hover:shadow-[0_0_10px_rgba(0,240,255,0.2)]"
         >
           <RefreshCw size={16} />
           Refresh
@@ -260,14 +260,14 @@ const AdminDashboard = () => {
           
           {/* Subscription Growth Trend (Area Chart) */}
           <div className="glass-panel p-4 md:p-6 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#00f0ff]/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/5 rounded-full blur-3xl pointer-events-none"></div>
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h3 className="text-lg font-bold text-white">Active Subscription Volume</h3>
                 <p className="text-xs text-slate-400">Total active subscriptions over the last 6 months</p>
               </div>
               <div className="text-right">
-                <span className="text-2xl font-black text-[#00f0ff]">{stats.activeSubscriptions}</span>
+                <span className="text-2xl font-black text-secondary">{stats.activeSubscriptions}</span>
                 <p className="text-[10px] text-slate-400">Active Licenses</p>
               </div>
             </div>
@@ -295,7 +295,7 @@ const AdminDashboard = () => {
 
           {/* Platform Subscriber Trends (Interactive Multi-Line Analytics Graph) */}
           <div className="glass-panel p-4 md:p-6 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#00f0ff]/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/5 rounded-full blur-3xl pointer-events-none"></div>
             
             <div className="mb-6">
               <h3 className="text-lg font-bold text-white">Platform Subscriber Trends</h3>
@@ -371,10 +371,10 @@ const AdminDashboard = () => {
 
           {/* Platform Leader Detection Panel */}
           <div className="glass-panel p-5 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#00f0ff]/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full blur-3xl pointer-events-none"></div>
             
             <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Award size={16} className="text-[#00f0ff]" />
+              <Award size={16} className="text-secondary" />
               Platform Leaders
             </h3>
             
@@ -388,7 +388,7 @@ const AdminDashboard = () => {
                   </span>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-black text-[#00f0ff]">
+                  <span className="text-xs font-black text-secondary">
                     {stats.leadingPlatform?.subscribers || 0} active
                   </span>
                   <span className="text-[9px] text-slate-400 block mt-0.5">
@@ -406,7 +406,7 @@ const AdminDashboard = () => {
                   </span>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-black text-[#ff0055]">
+                  <span className="text-xs font-black text-primary">
                     {stats.longestContinuousSubscriber?.activeDays || 0} days
                   </span>
                   <span className="text-[9px] text-slate-400 block mt-0.5">
@@ -488,14 +488,14 @@ const AdminDashboard = () => {
           {/* Top Watch-time / Active Users */}
           <div className="glass-panel p-5 flex-1 flex flex-col">
             <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Clock size={16} className="text-[#00f0ff]" />
+              <Clock size={16} className="text-secondary" />
               Most Active Users
             </h3>
             <div className="space-y-3 overflow-y-auto max-h-[300px] flex-1 custom-scrollbar">
               {stats.mostActiveUsers && stats.mostActiveUsers.length > 0 ? (
                 stats.mostActiveUsers.map((u: any) => (
                   <div key={u._id} className="flex items-center gap-3 p-2 bg-slate-900/40 rounded-xl border border-white/5 hover:bg-slate-800/40 transition-colors duration-200">
-                    <div className="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-[#00f0ff] text-xs">
+                    <div className="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-secondary text-xs">
                       {getInitials(u.name)}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -507,7 +507,7 @@ const AdminDashboard = () => {
                       <p className="text-[10px] text-slate-400 font-medium">
                         Renewals: <span className="text-white font-bold">{u.totalRenewals || 0}</span>
                       </p>
-                      <p className="text-[9px] text-[#00f0ff] font-semibold truncate">
+                      <p className="text-[9px] text-secondary font-semibold truncate">
                         {u.subscriptionCount || 0} subscriptions
                       </p>
                     </div>

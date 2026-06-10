@@ -200,7 +200,7 @@ const generateMockDataset = () => {
     subscriptionCount: johnDoeSubs.length
   });
 
-  for (let i = 2; i <= 45; i++) {
+  for (let i = 2; i <= 46; i++) {
     const fName = rng.choose(firstNames);
     const lName = rng.choose(lastNames);
     const name = `${fName} ${lName}`;
@@ -429,8 +429,9 @@ export const calculateFallbackStats = (users: any[]) => {
     return 'Unknown';
   };
 
+  const mockUsersOnly = users.filter(u => u.numericId >= 2 && u.numericId <= 46);
   const allSubs: any[] = [];
-  users.forEach(u => {
+  mockUsersOnly.forEach(u => {
     if (u.subscriptions) {
       u.subscriptions.forEach((s: any) => {
         const rawPlatformName = getSubPlatformName(s);
@@ -453,7 +454,7 @@ export const calculateFallbackStats = (users: any[]) => {
     }
   });
 
-  const totalUsers = users.length;
+  const totalUsers = mockUsersOnly.length;
   const totalPlatforms = MOCK_PLATFORMS.length;
   const totalSubscriptions = allSubs.length;
   
@@ -536,7 +537,7 @@ export const calculateFallbackStats = (users: any[]) => {
       const startTime = new Date(s.startDate).getTime();
       if (startTime < minStart) {
         minStart = startTime;
-        const user = users.find(u => u._id.toString() === s.userId.toString());
+        const user = mockUsersOnly.find(u => u._id.toString() === s.userId.toString());
         longestContinuousSubscriber = {
           platformName: s.platformName,
           activeDays: s.activeDays,
@@ -640,7 +641,7 @@ export const calculateFallbackStats = (users: any[]) => {
   }
   
   // Map active days and renewals dynamically for each user based on earliest subscription start date (Requirement 8)
-  const usersWithEngagement = users.map(u => {
+  const usersWithEngagement = mockUsersOnly.map(u => {
     let earliestDate: number | null = null;
     let activeCount = 0;
     let totalRenewals = 0;

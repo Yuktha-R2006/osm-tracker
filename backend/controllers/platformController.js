@@ -14,7 +14,8 @@ const saveBase64Image = (base64String, platformName) => {
     return base64String;
   }
   
-  const ext = matches[1].split('/')[1] || 'png';
+  let ext = matches[1].split('/')[1] || 'png';
+  ext = ext.split('+')[0]; // convert e.g. svg+xml to svg
   const dataBuffer = Buffer.from(matches[2], 'base64');
   
   const filename = `logo-${platformName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now()}.${ext}`;
@@ -95,6 +96,7 @@ const createPlatform = async (req, res, next) => {
       name, 
       logo: logoPath, 
       status,
+      accentColor: themeColor || '#ff0055',
       themeColor: themeColor || '#ff0055',
       description: description || '',
       plans: plans || []
@@ -124,7 +126,10 @@ const updatePlatform = async (req, res, next) => {
       updateData.logo = saveBase64Image(req.body.logo, platformName);
     }
     if (req.body.status !== undefined) updateData.status = req.body.status;
-    if (req.body.themeColor !== undefined) updateData.themeColor = req.body.themeColor;
+    if (req.body.themeColor !== undefined) {
+      updateData.accentColor = req.body.themeColor;
+      updateData.themeColor = req.body.themeColor;
+    }
     if (req.body.description !== undefined) updateData.description = req.body.description;
     if (req.body.plans !== undefined) updateData.plans = req.body.plans;
     

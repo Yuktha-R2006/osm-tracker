@@ -83,7 +83,7 @@ const Dashboard = () => {
           <input
             type="text"
             placeholder="Search platforms or plans..."
-            className="w-full bg-slate-900/60 backdrop-blur-sm border border-slate-700/60 rounded-xl py-2.5 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-[#00f0ff] focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
+            className="w-full bg-slate-900/60 backdrop-blur-sm border border-slate-700/60 rounded-xl py-2.5 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-secondary focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
             value={searchQuery}
             onChange={(e) => api.get('/auth/profile').then(() => {})} // Just a trigger to test API if needed, or link to context search
           />
@@ -92,12 +92,12 @@ const Dashboard = () => {
 
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">My Subscriptions</h1>
+          <h1 className="text-3xl font-bold mb-2 bg-linear-to-r from-white to-slate-300 bg-clip-text text-transparent">My Subscriptions</h1>
           <p className="text-slate-400">Track and manage your streaming platforms</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#ff0055] to-[#ff0055]/80 hover:from-[#ff0055]/90 text-white rounded-xl font-medium transition-all duration-300 shadow-[0_0_15px_rgba(255,0,85,0.3)] hover:shadow-[0_0_25px_rgba(255,0,85,0.5)] hover:scale-105"
+          className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-primary to-primary/80 hover:from-primary/90 text-white rounded-xl font-medium transition-all duration-300 shadow-[0_0_15px_rgba(255,0,85,0.3)] hover:shadow-[0_0_25px_rgba(255,0,85,0.5)] hover:scale-105"
         >
           <Plus size={20} />
           Add New
@@ -136,14 +136,14 @@ const Dashboard = () => {
       {user?.watchHistory && user.watchHistory.length > 0 && (
         <div className="space-y-4">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <span className="w-8 h-1 bg-gradient-to-r from-[#ff0055] to-transparent rounded-full"></span>
+            <span className="w-8 h-1 bg-linear-to-r from-primary to-transparent rounded-full"></span>
             Watch History
           </h2>
           <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x snap-mandatory">
             {user.watchHistory.map((item, idx) => (
               <div 
                 key={idx}
-                className={`snap-start glass-panel bg-white/5 border p-5 rounded-2xl w-64 flex-shrink-0 transition-all duration-300 hover:scale-[1.03] hover:border-white/20 bg-gradient-to-br ${getPlatformTheme(item.ottPlatform)}`}
+                className={`snap-start backdrop-blur-lg border border-white/10 rounded-2xl p-5 w-64 shrink-0 transition-all duration-300 hover:scale-[1.03] hover:border-white/20 bg-linear-to-br ${getPlatformTheme(item.ottPlatform)}`}
               >
                 <div className="flex justify-between items-start mb-3">
                   <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-900/60 border border-white/5 text-slate-300">
@@ -168,7 +168,7 @@ const Dashboard = () => {
       {/* Subscriptions Grid */}
       <div className="space-y-6">
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
-          <span className="w-8 h-1 bg-gradient-to-r from-[#00f0ff] to-transparent rounded-full"></span>
+          <span className="w-8 h-1 bg-linear-to-r from-secondary to-transparent rounded-full"></span>
           Your Portfolio
         </h2>
 
@@ -194,7 +194,7 @@ const Dashboard = () => {
             {!searchQuery && (
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-800/60 backdrop-blur-sm hover:bg-slate-700/60 text-white border border-white/10 rounded-xl font-medium transition-all duration-300 hover:shadow-lg hover:shadow-[#ff0055]/20"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-800/60 backdrop-blur-sm hover:bg-slate-700/60 text-white border border-white/10 rounded-xl font-medium transition-all duration-300 hover:shadow-lg hover:shadow-primary/20"
               >
                 <Plus size={20} />
                 Add Subscription
@@ -207,7 +207,7 @@ const Dashboard = () => {
       {/* Floating Action Button - Mobile Only */}
       <button
         onClick={() => setIsModalOpen(true)}
-        className="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-[#ff0055] to-[#ff0055]/80 text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,0,85,0.4)] z-40 hover:scale-110 transition-transform duration-300"
+        className="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-linear-to-r from-primary to-primary/80 text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,0,85,0.4)] z-40 hover:scale-110 transition-transform duration-300"
       >
         <Plus size={28} />
       </button>

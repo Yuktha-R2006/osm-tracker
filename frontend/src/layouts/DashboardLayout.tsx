@@ -47,7 +47,7 @@ const DashboardLayout = () => {
       <aside className="hidden md:flex flex-col w-64 bg-[#1e293b] border-r border-slate-700">
         <div className="p-6">
           <h1 className="text-2xl font-bold gradient-text tracking-tight flex items-center gap-2">
-            <MonitorPlay className="text-[#ff0055]" />
+            <MonitorPlay className="text-primary" />
             OSM Tracker
           </h1>
         </div>
@@ -62,7 +62,7 @@ const DashboardLayout = () => {
                   to={link.path}
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                      isActive ? 'bg-[#00f0ff]/20 text-[#00f0ff]' : 'hover:bg-slate-800 hover:text-white'
+                      isActive ? 'bg-secondary/20 text-secondary' : 'hover:bg-slate-800 hover:text-white'
                     }`
                   }
                 >
@@ -80,7 +80,7 @@ const DashboardLayout = () => {
                   to={link.path}
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                      isActive ? 'bg-[#ff0055]/20 text-[#ff0055]' : 'hover:bg-slate-800 hover:text-white'
+                      isActive ? 'bg-primary/20 text-primary' : 'hover:bg-slate-800 hover:text-white'
                     }`
                   }
                 >
@@ -94,7 +94,7 @@ const DashboardLayout = () => {
 
         <div className="p-4 border-t border-slate-700">
           <div className="flex items-center gap-3 px-3 py-2 mb-4 bg-slate-800/40 rounded-xl border border-white/5">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#ff0055] to-[#00f0ff] flex items-center justify-center font-bold text-slate-900 shadow-md">
+            <div className="w-10 h-10 rounded-full bg-linear-to-tr from-primary to-secondary flex items-center justify-center font-bold text-slate-900 shadow-md">
               {getInitials(user?.name)}
             </div>
             <div className="flex-1 min-w-0">
@@ -119,7 +119,7 @@ const DashboardLayout = () => {
         {/* Mobile Header */}
         <header className="md:hidden flex items-center justify-between p-4 bg-[#1e293b] border-b border-slate-700 relative z-40">
           <h1 className="text-xl font-bold gradient-text flex items-center gap-2">
-            <MonitorPlay size={24} className="text-[#ff0055]" />
+            <MonitorPlay size={24} className="text-primary" />
             OSM
           </h1>
           <div className="flex items-center gap-4">
@@ -127,7 +127,7 @@ const DashboardLayout = () => {
               <button onClick={() => setNotifOpen(!notifOpen)} className="text-slate-400 hover:text-white">
                 <Bell size={24} />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[#ff0055] rounded-full border-2 border-[#1e293b] flex items-center justify-center text-[8px] font-bold text-white">
+                  <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-primary rounded-full border-2 border-[#1e293b] flex items-center justify-center text-[8px] font-bold text-white">
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
@@ -153,7 +153,7 @@ const DashboardLayout = () => {
                         onClick={() => setMobileMenuOpen(false)}
                         className={({ isActive }) =>
                           `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                            isActive ? 'bg-[#00f0ff]/20 text-[#00f0ff] shadow-[0_0_10px_rgba(0,240,255,0.3)]' : 'hover:bg-slate-800/60 hover:text-white'
+                            isActive ? 'bg-secondary/20 text-secondary shadow-[0_0_10px_rgba(0,240,255,0.3)]' : 'hover:bg-slate-800/60 hover:text-white'
                           }`
                         }
                       >
@@ -172,7 +172,7 @@ const DashboardLayout = () => {
                         onClick={() => setMobileMenuOpen(false)}
                         className={({ isActive }) =>
                           `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                            isActive ? 'bg-[#ff0055]/20 text-[#ff0055] shadow-[0_0_10px_rgba(255,0,85,0.3)]' : 'hover:bg-slate-800/60 hover:text-white'
+                            isActive ? 'bg-primary/20 text-primary shadow-[0_0_10px_rgba(255,0,85,0.3)]' : 'hover:bg-slate-800/60 hover:text-white'
                           }`
                         }
                       >
@@ -185,7 +185,7 @@ const DashboardLayout = () => {
               </nav>
               <div className="p-4 border-t border-white/10 pb-8">
                 <div className="flex items-center gap-3 px-4 py-3 mb-4 bg-slate-800/30 backdrop-blur-sm rounded-xl">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#ff0055] to-[#00f0ff] flex items-center justify-center font-bold text-slate-900 shadow-md">
+                  <div className="w-10 h-10 rounded-full bg-linear-to-tr from-primary to-secondary flex items-center justify-center font-bold text-slate-900 shadow-md">
                     {getInitials(user?.name)}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -215,7 +215,7 @@ const DashboardLayout = () => {
               <input
                 type="text"
                 placeholder="Search platforms, plans or subscriptions..."
-                className="w-full bg-slate-900/60 backdrop-blur-sm border border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-[#00f0ff] focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
+                className="w-full bg-slate-900/60 backdrop-blur-sm border border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-secondary focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -231,7 +231,7 @@ const DashboardLayout = () => {
               >
                 <Bell size={20} />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#ff0055] rounded-full border-2 border-[#0f172a] flex items-center justify-center text-[9px] font-bold text-white">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full border-2 border-[#0f172a] flex items-center justify-center text-[9px] font-bold text-white">
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
@@ -245,12 +245,12 @@ const DashboardLayout = () => {
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                 className="flex items-center gap-3 px-3 py-1.5 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 transition-all duration-300 cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#ff0055] to-[#00f0ff] flex items-center justify-center text-sm font-bold text-slate-900 shadow-md">
+                <div className="w-8 h-8 rounded-full bg-linear-to-tr from-primary to-secondary flex items-center justify-center text-sm font-bold text-slate-900 shadow-md">
                   {getInitials(user?.name)}
                 </div>
                 <div className="hidden lg:flex flex-col text-left">
                   <span className="text-xs font-semibold text-white leading-tight">{user?.name}</span>
-                  <span className="text-[10px] text-[#00f0ff] font-medium leading-none">
+                  <span className="text-[10px] text-secondary font-medium leading-none">
                     {user?.role === 'admin' ? 'Admin' : (user?.isPremium ? 'Premium User' : 'Normal User')}
                   </span>
                 </div>
@@ -303,8 +303,8 @@ const DashboardLayout = () => {
         </div>
         
         {/* Background Decorative Elements */}
-        <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-[#ff0055]/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-[#00f0ff]/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>
       </main>
     </div>
   );

@@ -23,18 +23,9 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import PlatformLogo from '../components/PlatformLogo';
 
 const PlatformManagement = () => {
-  const getLogoUrl = (logo?: string) => {
-    if (!logo) return '';
-    if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
-    const apiUrl = (import.meta as any).env.VITE_API_URL || '/api';
-    const backendUrl = apiUrl.replace(/\/api$/, '');
-    if (logo.startsWith('/uploads')) {
-      return `${backendUrl}${logo}`;
-    }
-    return logo;
-  };
 
   const [platforms, setPlatforms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -143,25 +134,10 @@ const PlatformManagement = () => {
       return;
     }
     const reader = new FileReader();
-    reader.onloadend = async () => {
+    reader.onloadend = () => {
       const base64Logo = reader.result as string;
       setFormData(prev => ({ ...prev, logo: base64Logo }));
-      
-      if (editingId) {
-        try {
-          const res = await api.put(`/platforms/${editingId}/logo`, { logo: base64Logo, platformId: editingId });
-          if (res.data && res.data.logo) {
-            setFormData(prev => ({ ...prev, logo: res.data.logo }));
-          }
-          toast.success('Logo uploaded and updated in database!');
-          fetchPlatforms();
-        } catch (error) {
-          console.error('Failed to upload logo to backend', error);
-          toast.error('Failed to update logo in database');
-        }
-      } else {
-        toast.success('Logo uploaded and preview generated!');
-      }
+      toast.success('Logo uploaded and preview generated!');
     };
     reader.readAsDataURL(file);
   };
@@ -240,13 +216,13 @@ const PlatformManagement = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-            OTT Platforms Catalog <span className="text-xs font-semibold px-2 py-0.5 bg-[#00f0ff]/10 text-[#00f0ff] rounded border border-[#00f0ff]/20">Management</span>
+            OTT Platforms Catalog <span className="text-xs font-semibold px-2 py-0.5 bg-secondary/10 text-secondary rounded border border-secondary/20">Management</span>
           </h1>
           <p className="text-slate-400 mt-1">Configure active streaming channels, subscription pricing structures, and view customer distribution.</p>
         </div>
         <button 
           onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#00f0ff] to-[#00f0ff]/80 hover:shadow-[0_0_15px_rgba(0,240,255,0.4)] hover:border-[#00f0ff] border border-transparent text-slate-900 rounded-xl font-bold transition-all hover:scale-[1.02] cursor-pointer hover:shadow-cyan-500/20 active:scale-95"
+          className="flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-secondary to-secondary/80 hover:shadow-[0_0_15px_rgba(0,240,255,0.4)] hover:border-secondary border border-transparent text-slate-900 rounded-xl font-bold transition-all hover:scale-[1.02] cursor-pointer hover:shadow-cyan-500/20 active:scale-95"
         >
           <Plus size={20} />
           Add Platform
@@ -259,7 +235,7 @@ const PlatformManagement = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {loading ? (
           <div className="col-span-full flex flex-col items-center justify-center py-20 gap-4">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#00f0ff]"></div>
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-secondary"></div>
             <p className="text-xs text-slate-500">Syncing platform catalog database...</p>
           </div>
         ) : platforms.length === 0 ? (
@@ -284,7 +260,7 @@ const PlatformManagement = () => {
                 {/* Top status badges */}
                 <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
                   {platform.isTrending && (
-                    <span className="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider bg-[#00f0ff]/20 text-[#00f0ff] border border-[#00f0ff]/30 animate-pulse">
+                    <span className="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider bg-secondary/20 text-secondary border border-secondary/30 animate-pulse">
                       <Sparkles size={8} className="inline mr-0.5" />
                       Trending
                     </span>
@@ -302,18 +278,12 @@ const PlatformManagement = () => {
                 <div>
                   <div className="flex items-center gap-4 mb-5 mt-4">
                     <div className="w-16 h-16 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center p-2 group-hover:scale-105 transition-all duration-300 shadow-inner shrink-0 relative overflow-hidden">
-                      {platform.logo ? (
-                        <img 
-                          src={getLogoUrl(platform.logo)} 
-                          alt={platform.name} 
-                          className="max-w-full max-h-full object-contain rounded-lg"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
-                      ) : (
-                        <span className="text-xl font-black text-slate-500">{platform.name.charAt(0)}</span>
-                      )}
+                      <PlatformLogo 
+                        src={platform.logo} 
+                        name={platform.name} 
+                        className="max-w-full max-h-full object-contain rounded-lg"
+                        fallbackClassName="text-xl font-black text-slate-500"
+                      />
                     </div>
                     <div className="min-w-0">
                       <h3 className="text-lg font-bold text-white truncate leading-snug">{platform.name}</h3>
@@ -342,7 +312,7 @@ const PlatformManagement = () => {
                     </div>
                     <div className="border-t border-l border-white/5 pl-3 pt-2">
                       <p className="text-[9px] text-slate-500 uppercase tracking-wide">Growth %</p>
-                      <p className="text-sm font-bold text-[#00f0ff] flex items-center gap-0.5">
+                      <p className="text-sm font-bold text-secondary flex items-center gap-0.5">
                         <TrendingUp size={12} />
                         +{growth}%
                       </p>
@@ -362,7 +332,7 @@ const PlatformManagement = () => {
                     </button>
                     <button 
                       onClick={() => handleOpenAnalytics(platform)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-slate-900/60 hover:bg-slate-800/60 text-[#00f0ff] border border-[#00f0ff]/20 hover:border-[#00f0ff]/60 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-slate-900/60 hover:bg-slate-800/60 text-secondary border border-secondary/20 hover:border-secondary/60 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95"
                       title="View Insights"
                     >
                       <Eye size={12} /> Insights
@@ -406,7 +376,7 @@ const PlatformManagement = () => {
           >
             <div className="p-6 border-b border-white/5 flex items-center justify-between">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Activity className="text-[#00f0ff]" size={20} />
+                <Activity className="text-secondary" size={20} />
                 {selectedAnalyticsPlatform.name} Analytics Overview
               </h2>
               <button
@@ -421,15 +391,12 @@ const PlatformManagement = () => {
               {/* branding header */}
               <div className="flex items-center gap-4 p-4 bg-slate-900/40 rounded-2xl border border-white/5">
                 <div className="w-16 h-16 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center p-1.5 shrink-0 overflow-hidden shadow-inner">
-                  {selectedAnalyticsPlatform.logo ? (
-                    <img 
-                      src={getLogoUrl(selectedAnalyticsPlatform.logo)} 
-                      alt={selectedAnalyticsPlatform.name} 
-                      className="max-w-full max-h-full object-contain" 
-                    />
-                  ) : (
-                    <span className="text-2xl font-black text-slate-500">{selectedAnalyticsPlatform.name.charAt(0)}</span>
-                  )}
+                  <PlatformLogo 
+                    src={selectedAnalyticsPlatform.logo} 
+                    name={selectedAnalyticsPlatform.name} 
+                    className="max-w-full max-h-full object-contain"
+                    fallbackClassName="text-2xl font-black text-slate-500"
+                  />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white leading-snug">{selectedAnalyticsPlatform.name}</h3>
@@ -458,7 +425,7 @@ const PlatformManagement = () => {
                   </div>
                   <div className="bg-slate-900/40 border border-white/5 rounded-xl p-3 flex flex-col justify-between">
                     <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wide">Yearly Price</span>
-                    <span className="text-lg font-black text-[#00f0ff] mt-1">
+                    <span className="text-lg font-black text-secondary mt-1">
                       ${selectedAnalyticsPlatform.plans?.[0]?.pricingYearly || '99.99'}/yr
                     </span>
                   </div>
@@ -517,12 +484,12 @@ const PlatformManagement = () => {
           <div className="bg-[#1e293b]/95 border border-white/10 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col max-h-[95vh] relative">
             <div 
               className="absolute top-0 left-0 w-full h-[5px]" 
-              style={{ backgroundColor: formData.themeColor || '#00f0ff' }}
+              style={{ backgroundColor: formData.themeColor || 'var(--color-secondary)' }}
             ></div>
             
             <div className="p-6 border-b border-white/5 flex items-center justify-between">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <Layers className="text-[#00f0ff]" size={18} />
+                <Layers className="text-secondary" size={18} />
                 {editingId ? 'Configure OTT Platform' : 'Create OTT Platform'}
               </h2>
               <button
@@ -542,7 +509,7 @@ const PlatformManagement = () => {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 px-3 text-white focus:outline-none focus:border-[#00f0ff] focus:shadow-[0_0_10px_rgba(0,240,255,0.15)] text-sm transition-all"
+                  className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 px-3 text-white focus:outline-none focus:border-secondary focus:shadow-[0_0_10px_rgba(var(--color-secondary-rgb),0.15)] text-sm transition-all"
                   placeholder="e.g. HBO Max"
                 />
               </div>
@@ -552,7 +519,7 @@ const PlatformManagement = () => {
                 <textarea 
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 px-3 text-white focus:outline-none focus:border-[#00f0ff] focus:shadow-[0_0_10px_rgba(0,240,255,0.15)] text-sm h-18 resize-none transition-all"
+                  className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 px-3 text-white focus:outline-none focus:border-secondary focus:shadow-[0_0_10px_rgba(var(--color-secondary-rgb),0.15)] text-sm h-18 resize-none transition-all"
                   placeholder="Catalog highlights, content selection, video quality specs..."
                 />
               </div>
@@ -566,13 +533,11 @@ const PlatformManagement = () => {
                   <div className="p-4 bg-slate-900/60 border border-slate-700 rounded-xl flex items-center justify-between gap-4 animate-in zoom-in duration-200">
                     <div className="flex items-center gap-3">
                       <div className="w-14 h-14 rounded-full bg-slate-950 border border-slate-700 flex items-center justify-center p-1.5 overflow-hidden shadow-inner shrink-0">
-                        <img 
-                          src={getLogoUrl(formData.logo)} 
-                          alt="Platform Logo Preview" 
+                        <PlatformLogo 
+                          src={formData.logo} 
+                          name={formData.name || 'Platform'} 
                           className="w-full h-full object-contain rounded-full"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                          }}
+                          fallbackClassName="text-xl font-bold text-slate-500"
                         />
                       </div>
                       <div className="min-w-0">
@@ -607,10 +572,10 @@ const PlatformManagement = () => {
                     onDragOver={handleDrag}
                     onDragLeave={handleDrag}
                     onDrop={handleDrop}
-                    className={`w-full p-6 bg-slate-950/40 rounded-xl border-2 border-dashed flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300 relative ${
+                    className={`w-full p-6 rounded-xl border-2 border-dashed flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300 relative ${
                       dragActive 
-                        ? 'border-[#00f0ff] bg-[#00f0ff]/5 shadow-[0_0_15px_rgba(0,240,255,0.15)]' 
-                        : 'border-slate-700 hover:border-slate-500 hover:bg-slate-900/20'
+                        ? 'border-secondary bg-secondary/5 shadow-[0_0_15px_rgba(0,240,255,0.15)]' 
+                        : 'bg-slate-950/40 border-slate-700 hover:border-slate-500 hover:bg-slate-900/20'
                     }`}
                   >
                     <input 
@@ -619,9 +584,9 @@ const PlatformManagement = () => {
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       onChange={handleFileInputChange}
                     />
-                    <UploadCloud size={28} className={`mb-2 transition-transform duration-300 ${dragActive ? 'scale-110 text-[#00f0ff]' : 'text-slate-400'}`} />
+                    <UploadCloud size={28} className={`mb-2 transition-transform duration-300 ${dragActive ? 'scale-110 text-secondary' : 'text-slate-400'}`} />
                     <p className="text-xs font-bold text-white leading-snug">Drag & drop logo here</p>
-                    <p className="text-[10px] text-slate-500 mt-1">or <span className="text-[#00f0ff] hover:underline font-semibold">browse your computer</span></p>
+                    <p className="text-[10px] text-slate-500 mt-1">or <span className="text-secondary hover:underline font-semibold">browse your computer</span></p>
                     <p className="text-[9px] text-slate-500 mt-1 uppercase font-mono tracking-wider">PNG, JPG, SVG, WEBP (Max 2MB)</p>
                   </div>
                 )}
@@ -638,7 +603,7 @@ const PlatformManagement = () => {
                     required
                     value={formData.pricingMonthly}
                     onChange={(e) => setFormData({...formData, pricingMonthly: parseFloat(e.target.value) || 0})}
-                    className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 px-3 text-white focus:outline-none focus:border-[#00f0ff] text-sm transition-all"
+                    className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 px-3 text-white focus:outline-none focus:border-secondary text-sm transition-all"
                     placeholder="9.99"
                   />
                 </div>
@@ -651,7 +616,7 @@ const PlatformManagement = () => {
                     required
                     value={formData.pricingYearly}
                     onChange={(e) => setFormData({...formData, pricingYearly: parseFloat(e.target.value) || 0})}
-                    className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 px-3 text-white focus:outline-none focus:border-[#00f0ff] text-sm transition-all"
+                    className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 px-3 text-white focus:outline-none focus:border-secondary text-sm transition-all"
                     placeholder="99.99"
                   />
                 </div>
@@ -664,7 +629,7 @@ const PlatformManagement = () => {
                   required
                   value={formData.subscriptionType}
                   onChange={(e) => setFormData({...formData, subscriptionType: e.target.value})}
-                  className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 px-3 text-white focus:outline-none focus:border-[#00f0ff] text-sm transition-all"
+                  className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 px-3 text-white focus:outline-none focus:border-secondary text-sm transition-all"
                   placeholder="e.g. Premium HD, Mega Pass, VIP Plan"
                 />
               </div>
@@ -678,7 +643,7 @@ const PlatformManagement = () => {
                     required
                     value={formData.themeColor}
                     onChange={(e) => setFormData({...formData, themeColor: e.target.value})}
-                    className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 pl-10 pr-4 text-white focus:outline-none focus:border-[#00f0ff] text-sm font-mono transition-all"
+                    className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 pl-10 pr-4 text-white focus:outline-none focus:border-secondary text-sm font-mono transition-all"
                     placeholder="#ff0055"
                   />
                   <input 
@@ -695,7 +660,7 @@ const PlatformManagement = () => {
                 <select 
                   value={formData.status}
                   onChange={(e) => setFormData({...formData, status: e.target.value})}
-                  className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2.5 px-3 text-white focus:outline-none focus:border-[#00f0ff] text-sm cursor-pointer transition-all"
+                  className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2.5 px-3 text-white focus:outline-none focus:border-secondary text-sm cursor-pointer transition-all"
                 >
                   <option value="active">Active Integration</option>
                   <option value="inactive">Suspended Integration</option>
@@ -712,7 +677,7 @@ const PlatformManagement = () => {
                 </button>
                 <button 
                   type="submit" 
-                  className="flex-1 py-2.5 bg-[#00f0ff] hover:bg-[#00d0e6] text-slate-900 rounded-xl text-xs font-bold shadow-md cursor-pointer transition-all flex items-center justify-center gap-1.5 active:scale-95"
+                  className="flex-1 py-2.5 bg-secondary hover:bg-cyan-500 text-slate-900 rounded-xl text-xs font-bold shadow-md cursor-pointer transition-all flex items-center justify-center gap-1.5 active:scale-95"
                 >
                   <Check size={14} />
                   Save Configurations

@@ -3,19 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, CreditCard, Clock, Trash2, CheckCircle, RefreshCw, Edit2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
+import PlatformLogo from '../components/PlatformLogo';
 
 const SubscriptionDetails = () => {
-  const getLogoUrl = (logo?: string) => {
-    if (!logo) return '';
-    if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
-    const apiUrl = (import.meta as any).env.VITE_API_URL || '/api';
-    const backendUrl = apiUrl.replace(/\/api$/, '');
-    if (logo.startsWith('/uploads')) {
-      return `${backendUrl}${logo}`;
-    }
-    return logo;
-  };
-
   const { id } = useParams();
   const navigate = useNavigate();
   const [subscription, setSubscription] = useState(null);
@@ -123,7 +113,7 @@ const SubscriptionDetails = () => {
     if (name.includes('disney')) return 'from-indigo-600 to-indigo-400';
     if (name.includes('viki')) return 'from-purple-600 to-purple-400';
     if (name.includes('iqiyi')) return 'from-green-600 to-green-400';
-    return 'from-[#ff0055] to-[#00f0ff]';
+    return 'from-primary to-secondary';
   };
 
   const getStatusColor = () => {
@@ -149,21 +139,22 @@ const SubscriptionDetails = () => {
 
       {/* Hero Banner */}
       <div className="glass-panel backdrop-blur-xl bg-white/5 border border-white/10 overflow-hidden relative mb-8">
-        <div className={`absolute inset-0 bg-gradient-to-br ${getPlatformColor()} opacity-20`}></div>
-        <div className={`absolute inset-0 bg-gradient-to-b from-transparent to-[#0f172a]`}></div>
+        <div className={`absolute inset-0 bg-linear-to-br ${getPlatformColor()} opacity-20`}></div>
+        <div className={`absolute inset-0 bg-linear-to-b from-transparent to-dark-200`}></div>
         
         <div className="p-8 md:p-12 relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
             <div className="flex items-center gap-8">
-              <div className="w-32 h-32 rounded-2xl bg-slate-900/60 backdrop-blur-sm flex items-center justify-center border border-white/10 overflow-hidden shadow-2xl shadow-black/30 group hover:scale-105 transition-transform duration-300">
-                 {subscription.ottPlatformId?.logo ? (
-                  <img src={getLogoUrl(subscription.ottPlatformId.logo)} alt={subscription.ottPlatformId.name} className="w-full h-full object-contain bg-white" />
-                ) : (
-                  <span className="text-3xl font-bold text-slate-500">{subscription.ottPlatformId?.name?.charAt(0)}</span>
-                )}
+              <div className="w-32 h-32 rounded-2xl bg-slate-900/60 backdrop-blur-sm flex items-center justify-center border border-white/10 overflow-hidden shadow-2xl shadow-black/30 group hover:scale-105 transition-transform duration-300 p-2">
+                <PlatformLogo 
+                  src={subscription.ottPlatformId?.logo} 
+                  name={subscription.ottPlatformId?.name || 'Platform'} 
+                  className="w-full h-full object-contain rounded-lg"
+                  fallbackClassName="text-3xl font-bold text-slate-500"
+                />
               </div>
               <div>
-                <h1 className="text-4xl font-bold text-white mb-3 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">{subscription.ottPlatformId?.name}</h1>
+                <h1 className="text-4xl font-bold mb-3 bg-linear-to-r from-white to-slate-300 bg-clip-text text-transparent">{subscription.ottPlatformId?.name}</h1>
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="px-4 py-2 bg-slate-900/60 backdrop-blur-sm text-slate-300 rounded-full text-sm font-medium border border-white/10">
                     {subscription.planName}
@@ -185,7 +176,7 @@ const SubscriptionDetails = () => {
               </button>
               <button 
                 onClick={handleRenew}
-                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-[#00f0ff] to-[#00f0ff]/80 hover:from-[#00f0ff]/90 text-slate-900 border border-[#00f0ff]/30 rounded-xl font-semibold transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:shadow-[0_0_25px_rgba(0,240,255,0.5)] hover:scale-105 cursor-pointer"
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-linear-to-r from-secondary to-secondary/80 hover:from-secondary/90 text-slate-900 border border-secondary/30 rounded-xl font-semibold transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:shadow-[0_0_25px_rgba(0,240,255,0.5)] hover:scale-105 cursor-pointer"
               >
                 <RefreshCw size={18} />
                 Renew
@@ -193,7 +184,7 @@ const SubscriptionDetails = () => {
               {subscription.status === 'active' && (
                 <button 
                   onClick={handleCancel}
-                  className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-[#ff0055] to-[#ff0055]/80 hover:from-[#ff0055]/90 text-white border border-[#ff0055]/30 rounded-xl font-semibold transition-all duration-300 shadow-[0_0_15px_rgba(255,0,85,0.3)] hover:shadow-[0_0_25px_rgba(255,0,85,0.5)] hover:scale-105 cursor-pointer"
+                  className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-linear-to-r from-primary to-primary/80 hover:from-primary/90 text-white border border-primary/30 rounded-xl font-semibold transition-all duration-300 shadow-[0_0_15px_rgba(255,0,85,0.3)] hover:shadow-[0_0_25px_rgba(255,0,85,0.5)] hover:scale-105 cursor-pointer"
                 >
                   <Trash2 size={18} />
                   Cancel
@@ -208,7 +199,7 @@ const SubscriptionDetails = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-6">
           <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-            <Calendar className="text-[#00f0ff]" /> Subscription Details
+            <Calendar className="text-secondary" /> Subscription Details
           </h3>
           
           <div className="glass-panel backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 hover:border-white/20 transition-all duration-300">
@@ -222,7 +213,7 @@ const SubscriptionDetails = () => {
             </div>
             <div className="flex justify-between items-center pt-4 border-t border-white/10">
               <span className="text-slate-400 text-sm">Days Remaining</span>
-              <span className={`font-bold ${daysRemaining <= 3 && subscription.status === 'active' ? 'text-orange-400' : 'text-[#00f0ff]'} text-lg`}>
+              <span className={`font-bold ${daysRemaining <= 3 && subscription.status === 'active' ? 'text-orange-400' : 'text-secondary'} text-lg`}>
                 {subscription.status === 'active' ? (daysRemaining > 0 ? `${daysRemaining} days` : '0 days') : '0 days'}
               </span>
             </div>
@@ -231,7 +222,7 @@ const SubscriptionDetails = () => {
 
         <div className="space-y-6">
           <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-            <CreditCard className="text-[#ff0055]" /> Billing Information
+            <CreditCard className="text-primary" /> Billing Information
           </h3>
           
           <div className="glass-panel backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 hover:border-white/20 transition-all duration-300">
@@ -258,7 +249,7 @@ const SubscriptionDetails = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-300">
           <div className="bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl shadow-black/50 animate-in zoom-in-95 duration-300">
             <div className="flex justify-between items-center p-5 border-b border-white/10">
-              <h2 className="text-xl font-bold text-white bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">Edit Subscription</h2>
+              <h2 className="text-xl font-bold bg-linear-to-r from-white to-slate-300 bg-clip-text text-transparent">Edit Subscription</h2>
               <button onClick={() => setIsEditModalOpen(false)} className="text-slate-400 hover:text-white transition-colors hover:scale-110 transform duration-200 cursor-pointer">
                 <X size={20} />
               </button>
@@ -272,7 +263,7 @@ const SubscriptionDetails = () => {
                   required
                   value={editFormData.planName}
                   onChange={(e) => setEditFormData({...editFormData, planName: e.target.value})}
-                  className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white placeholder-slate-500 focus:outline-none focus:border-[#00f0ff] focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
+                  className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white placeholder-slate-500 focus:outline-none focus:border-secondary focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
                 />
               </div>
 
@@ -285,7 +276,7 @@ const SubscriptionDetails = () => {
                   step="0.01"
                   value={editFormData.subscriptionCost}
                   onChange={(e) => setEditFormData({...editFormData, subscriptionCost: Number(e.target.value)})}
-                  className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white placeholder-slate-500 focus:outline-none focus:border-[#00f0ff] focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
+                  className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white placeholder-slate-500 focus:outline-none focus:border-secondary focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
                 />
               </div>
 
@@ -297,7 +288,7 @@ const SubscriptionDetails = () => {
                     required
                     value={editFormData.startDate}
                     onChange={(e) => setEditFormData({...editFormData, startDate: e.target.value})}
-                    className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white focus:outline-none focus:border-[#00f0ff] transition-all duration-300"
+                    className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white focus:outline-none focus:border-secondary transition-all duration-300"
                   />
                 </div>
                 <div>
@@ -307,7 +298,7 @@ const SubscriptionDetails = () => {
                     required
                     value={editFormData.expiryDate}
                     onChange={(e) => setEditFormData({...editFormData, expiryDate: e.target.value})}
-                    className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white focus:outline-none focus:border-[#00f0ff] transition-all duration-300"
+                    className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white focus:outline-none focus:border-secondary transition-all duration-300"
                   />
                 </div>
               </div>
@@ -318,7 +309,7 @@ const SubscriptionDetails = () => {
                   type="checkbox"
                   checked={editFormData.autoRenewal}
                   onChange={(e) => setEditFormData({...editFormData, autoRenewal: e.target.checked})}
-                  className="w-4 h-4 rounded border-white/20 text-[#00f0ff] focus:ring-[#00f0ff] bg-slate-900/60 cursor-pointer"
+                  className="w-4 h-4 rounded border-white/20 text-secondary focus:ring-secondary bg-slate-900/60 cursor-pointer"
                 />
                 <label htmlFor="editAutoRenewal" className="ml-2 text-sm text-slate-300 cursor-pointer">
                   Auto-renewal enabled
@@ -335,7 +326,7 @@ const SubscriptionDetails = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-gradient-to-r from-[#ff0055] to-[#ff0055]/80 hover:from-[#ff0055]/90 text-white rounded-lg font-bold transition-all duration-300 shadow-[0_0_15px_rgba(255,0,85,0.3)] hover:scale-105 cursor-pointer"
+                  className="px-6 py-2 bg-linear-to-r from-primary to-primary/80 hover:from-primary/90 text-white rounded-lg font-bold transition-all duration-300 shadow-[0_0_15px_rgba(255,0,85,0.3)] hover:scale-105 cursor-pointer"
                 >
                   Save Changes
                 </button>

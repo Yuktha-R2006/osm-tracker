@@ -2,19 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { X, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
+import PlatformLogo from './PlatformLogo';
 
 const AddSubscriptionModal = ({ isOpen, onClose, onAdd }) => {
-  const getLogoUrl = (logo?: string) => {
-    if (!logo) return '';
-    if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
-    const apiUrl = (import.meta as any).env.VITE_API_URL || '/api';
-    const backendUrl = apiUrl.replace(/\/api$/, '');
-    if (logo.startsWith('/uploads')) {
-      return `${backendUrl}${logo}`;
-    }
-    return logo;
-  };
-
   const [platforms, setPlatforms] = useState([]);
   const [formData, setFormData] = useState({
     ottPlatformId: '',
@@ -194,7 +184,7 @@ const AddSubscriptionModal = ({ isOpen, onClose, onAdd }) => {
         ) : (
           <>
             <div className="flex justify-between items-center p-5 border-b border-white/10">
-              <h2 className="text-xl font-bold text-white bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">Add Subscription</h2>
+              <h2 className="text-xl font-bold bg-linear-to-r from-white to-slate-300 bg-clip-text text-transparent">Add Subscription</h2>
               <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors hover:scale-110 transform duration-200 cursor-pointer">
                 <X size={20} />
               </button>
@@ -213,12 +203,17 @@ const AddSubscriptionModal = ({ isOpen, onClose, onAdd }) => {
                         onClick={() => handlePlatformSelect(platform._id)}
                         className={`cursor-pointer rounded-xl border p-2 flex flex-col items-center justify-center gap-1 transition-all duration-300 ${
                           formData.ottPlatformId === platform._id
-                            ? 'bg-[#ff0055]/20 border-[#ff0055] shadow-[0_0_15px_rgba(255,0,85,0.4)] scale-105'
+                            ? 'bg-primary/20 border-primary shadow-[0_0_15px_rgba(255,0,85,0.4)] scale-105'
                             : 'bg-slate-900/60 backdrop-blur-sm border-white/10 hover:border-white/20 hover:bg-slate-800/60'
                         }`}
                       >
-                        <div className="w-8 h-8 rounded-full overflow-hidden bg-white/5 flex items-center justify-center">
-                           {platform.logo ? <img src={getLogoUrl(platform.logo)} alt={platform.name} className="w-full h-full object-contain" /> : <span className="text-xs">{platform.name.charAt(0)}</span>}
+                        <div className="w-8 h-8 rounded-full overflow-hidden bg-white/5 flex items-center justify-center p-1 relative">
+                          <PlatformLogo 
+                            src={platform.logo} 
+                            name={platform.name} 
+                            className="w-full h-full object-contain"
+                            fallbackClassName="text-xs font-bold text-slate-400"
+                          />
                         </div>
                         <span className="text-[10px] text-center text-slate-300 truncate w-full">{platform.name}</span>
                       </div>
@@ -233,7 +228,7 @@ const AddSubscriptionModal = ({ isOpen, onClose, onAdd }) => {
                       name="planName"
                       value={formData.planName}
                       onChange={(e) => handlePlanChange(e.target.value)}
-                      className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white focus:outline-none focus:border-[#00f0ff] transition-all duration-300 cursor-pointer"
+                      className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white focus:outline-none focus:border-secondary transition-all duration-300 cursor-pointer"
                     >
                       {availablePlans.map(plan => (
                         <option key={plan.name} value={plan.name} className="bg-slate-900 text-white">
@@ -248,7 +243,7 @@ const AddSubscriptionModal = ({ isOpen, onClose, onAdd }) => {
                     <select
                       value={billingCycle}
                       onChange={(e) => handleCycleChange(e.target.value)}
-                      className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white focus:outline-none focus:border-[#00f0ff] transition-all duration-300 cursor-pointer"
+                      className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white focus:outline-none focus:border-secondary transition-all duration-300 cursor-pointer"
                     >
                       <option value="monthly" className="bg-slate-900 text-white">Monthly</option>
                       <option value="yearly" className="bg-slate-900 text-white">Yearly</option>
@@ -265,7 +260,7 @@ const AddSubscriptionModal = ({ isOpen, onClose, onAdd }) => {
                       required
                       value={formData.startDate}
                       onChange={handleChange}
-                      className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white focus:outline-none focus:border-[#00f0ff] transition-all duration-300"
+                      className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white focus:outline-none focus:border-secondary transition-all duration-300"
                     />
                   </div>
                   <div>
@@ -276,7 +271,7 @@ const AddSubscriptionModal = ({ isOpen, onClose, onAdd }) => {
                       required
                       value={formData.expiryDate}
                       onChange={handleChange}
-                      className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white focus:outline-none focus:border-[#00f0ff] transition-all duration-300"
+                      className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white focus:outline-none focus:border-secondary transition-all duration-300"
                     />
                   </div>
                 </div>
@@ -291,7 +286,7 @@ const AddSubscriptionModal = ({ isOpen, onClose, onAdd }) => {
                     step="0.01"
                     value={formData.subscriptionCost}
                     onChange={handleChange}
-                    className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white focus:outline-none focus:border-[#00f0ff] focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
+                    className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white focus:outline-none focus:border-secondary focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
                   />
                 </div>
 
@@ -302,7 +297,7 @@ const AddSubscriptionModal = ({ isOpen, onClose, onAdd }) => {
                     type="checkbox"
                     checked={formData.autoRenewal}
                     onChange={handleChange}
-                    className="w-4 h-4 rounded border-white/20 text-[#00f0ff] focus:ring-[#00f0ff] focus:ring-offset-0 bg-slate-900/60 cursor-pointer"
+                    className="w-4 h-4 rounded border-white/20 text-secondary focus:ring-secondary focus:ring-offset-0 bg-slate-900/60 cursor-pointer"
                   />
                   <label htmlFor="autoRenewal" className="ml-2 text-sm text-slate-300 cursor-pointer">
                     Auto-renewal enabled
@@ -320,7 +315,7 @@ const AddSubscriptionModal = ({ isOpen, onClose, onAdd }) => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="px-6 py-2 bg-gradient-to-r from-[#ff0055] to-[#ff0055]/80 hover:from-[#ff0055]/90 text-white rounded-lg font-bold transition-all duration-300 shadow-[0_0_15px_rgba(255,0,85,0.3)] hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 cursor-pointer"
+                    className="px-6 py-2 bg-linear-to-r from-primary to-primary/80 hover:from-primary/90 text-white rounded-lg font-bold transition-all duration-300 shadow-[0_0_15px_rgba(255,0,85,0.3)] hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 cursor-pointer"
                   >
                     {loading ? 'Saving...' : 'Add Subscription'}
                   </button>

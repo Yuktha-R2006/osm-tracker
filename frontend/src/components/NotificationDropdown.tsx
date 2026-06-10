@@ -38,12 +38,12 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOpen, onC
           >
             <div className="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-800/50">
               <h3 className="font-bold text-white flex items-center gap-2">
-                <Bell size={18} className="text-[#00f0ff]" /> Notifications
+                <Bell size={18} className="text-secondary" /> Notifications
               </h3>
               {unreadCount > 0 && (
                 <button 
                   onClick={markAsRead}
-                  className="text-xs text-[#00f0ff] hover:text-white transition-colors flex items-center gap-1"
+                  className="text-xs text-secondary hover:text-white transition-colors flex items-center gap-1"
                 >
                   <Check size={14} /> Mark all read
                 </button>
@@ -63,7 +63,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOpen, onC
                       key={notif._id} 
                       className={`p-4 flex gap-3 transition-colors ${notif.isRead ? 'opacity-70 bg-transparent' : 'bg-slate-800/30'}`}
                     >
-                      <div className="flex-shrink-0 mt-0.5">
+                      <div className="shrink-0 mt-0.5">
                         {getIcon(notif.type)}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -75,7 +75,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOpen, onC
                         </p>
                       </div>
                       {!notif.isRead && (
-                        <div className="w-2 h-2 bg-[#ff0055] rounded-full mt-1.5 flex-shrink-0"></div>
+                        <div className="w-2 h-2 bg-primary rounded-full mt-1.5 shrink-0"></div>
                       )}
                     </div>
                   ))}

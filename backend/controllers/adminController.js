@@ -77,7 +77,7 @@ const enrichUsersWithSubscriptions = async (usersList) => {
 
 const getStats = async (req, res, next) => {
   try {
-    const rawUsers = await User.find({ role: 'user' }).select('-password');
+    const rawUsers = await User.find({ role: 'user', numericId: { $ne: 1 } }).select('-password');
     const users = await enrichUsersWithSubscriptions(rawUsers);
     const platforms = await OTTPlatform.find({});
     
@@ -268,23 +268,26 @@ const getStats = async (req, res, next) => {
         const platformSubs = allSubs.filter(s => s.platformName === p.name);
         
         const activeSubsThisMonth = platformSubs.filter(s => {
-          if (!isSubscriptionActive(s)) return false;
           const start = new Date(s.startDate || s.createdAt).getTime();
-          return start <= endOfMonth.getTime();
+          const expiry = new Date(s.endDate || s.expiryDate).getTime();
+          const isCancelled = s.cancelled === true || s.isCancelled === true || s.status === 'cancelled';
+          const cancellationTime = s.cancellationDate ? new Date(s.cancellationDate).getTime() : expiry;
+          
+          return start <= endOfMonth.getTime() && 
+                 expiry >= startOfMonth.getTime() && 
+                 (!isCancelled || cancellationTime >= startOfMonth.getTime());
         });
         
         const gainedSubsThisMonth = platformSubs.filter(s => {
-          if (!isSubscriptionActive(s)) return false;
-          const created = new Date(s.createdAt || s.startDate).getTime();
-          return created >= startOfMonth.getTime() && created <= endOfMonth.getTime();
+          const start = new Date(s.startDate || s.createdAt).getTime();
+          return start >= startOfMonth.getTime() && start <= endOfMonth.getTime();
         });
         
         const lostSubsThisMonth = platformSubs.filter(s => {
           const isCancelled = s.cancelled === true || s.isCancelled === true || s.status === 'cancelled';
-          if (!isCancelled) return false;
-          
-          const cancelTime = s.cancellationDate ? new Date(s.cancellationDate).getTime() : new Date(s.endDate || s.expiryDate).getTime();
-          return cancelTime >= startOfMonth.getTime() && cancelTime <= endOfMonth.getTime();
+          const expiry = new Date(s.endDate || s.expiryDate).getTime();
+          const cancellationTime = s.cancellationDate ? new Date(s.cancellationDate).getTime() : expiry;
+          return isCancelled && cancellationTime >= startOfMonth.getTime() && cancellationTime <= endOfMonth.getTime();
         });
         
         monthData[p.name] = activeSubsThisMonth.length;

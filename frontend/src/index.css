@@ -80,7 +80,7 @@ a {
     @apply bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl;
   }
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+    @apply bg-clip-text text-transparent bg-linear-to-r from-primary to-secondary;
   }
   .custom-scrollbar {
     scrollbar-width: thin;

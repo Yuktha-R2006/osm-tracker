@@ -88,7 +88,7 @@ const Analytics = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-40">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00f0ff]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary"></div>
         <p className="text-slate-400 mt-4 animate-pulse">Running advanced calculations...</p>
       </div>
     );
@@ -108,7 +108,7 @@ const Analytics = () => {
           <select 
             value={timeRange} 
             onChange={(e) => setTimeRange(e.target.value)}
-            className="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#00f0ff]"
+            className="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-secondary"
           >
             <option value="30d">Last 30 Days</option>
             <option value="6m">Last 6 Months</option>
@@ -116,7 +116,7 @@ const Analytics = () => {
           </select>
           <button 
             onClick={fetchStats}
-            className="p-2.5 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-white rounded-xl transition-all cursor-pointer hover:border-[#00f0ff]/50"
+            className="p-2.5 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-white rounded-xl transition-all cursor-pointer hover:border-secondary/50"
             title="Refresh Analysis"
           >
             <RefreshCw size={16} />
@@ -302,7 +302,7 @@ const Analytics = () => {
         {/* Platform Share Leaderboard */}
         <div className="lg:col-span-2 glass-panel p-6">
           <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
-            <MonitorPlay size={20} className="text-[#00f0ff]" />
+            <MonitorPlay size={20} className="text-secondary" />
             Streaming Popularity Matrix
           </h3>
           <p className="text-xs text-slate-400 mb-6">Subscribers density per streaming service (active subscription units)</p>
@@ -325,7 +325,7 @@ const Analytics = () => {
                       </div>
                       <div className="flex items-center gap-4">
                         <span className="text-xs font-semibold text-slate-400">{platform.value} Subs</span>
-                        <span className="text-xs font-black text-[#00f0ff]">{percentage}%</span>
+                        <span className="text-xs font-black text-secondary">{percentage}%</span>
                       </div>
                     </div>
                     {/* Progress Bar */}
@@ -352,7 +352,7 @@ const Analytics = () => {
         <div className="glass-panel p-6 flex flex-col justify-between">
           <div>
             <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
-              <Flame size={20} className="text-[#ff0055]" />
+              <Flame size={20} className="text-primary" />
               Subscription Engagement
             </h3>
             <p className="text-xs text-slate-400 mb-6">Global subscription active metrics across the subscriber pool</p>
@@ -362,12 +362,12 @@ const Analytics = () => {
             {stats.mostActiveUsers && stats.mostActiveUsers.slice(0, 5).map((user: any, index: number) => (
               <div key={user._id} className="flex items-center justify-between p-3 bg-slate-900/60 rounded-xl border border-white/5">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#ff0055] to-[#a855f7] flex items-center justify-center text-slate-900 font-extrabold text-xs">
+                  <div className="w-8 h-8 rounded-full bg-linear-to-tr from-primary to-purple-500 flex items-center justify-center text-slate-900 font-extrabold text-xs">
                     {index + 1}
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-white truncate">{user.name}</p>
-                    <p className="text-[9px] text-[#ff0055] uppercase font-semibold">
+                    <p className="text-[9px] text-primary uppercase font-semibold">
                       {user.subscriptionCount || 0} subscriptions
                     </p>
                   </div>
@@ -380,8 +380,8 @@ const Analytics = () => {
             ))}
           </div>
 
-          <div className="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-xs text-slate-400 bg-slate-800/20 p-3 rounded-lg border border-slate-700/50">
-            <Info size={16} className="text-[#00f0ff] shrink-0" />
+          <div className="mt-6 pt-4 flex items-center gap-2 text-xs text-slate-400 bg-slate-800/20 p-3 rounded-lg border border-slate-700/50">
+            <Info size={16} className="text-secondary shrink-0" />
             <p className="leading-tight">Rankings derived directly from user subscription counts, renewals, and continuous active days.</p>
           </div>
         </div>

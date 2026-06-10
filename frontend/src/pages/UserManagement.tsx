@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PlatformLogo from '../components/PlatformLogo';
 import { 
   Users, 
   Trash2, 
@@ -19,17 +20,6 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 
 const UserManagement = () => {
-  const getLogoUrl = (logo?: string) => {
-    if (!logo) return '';
-    if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
-    const apiUrl = (import.meta as any).env.VITE_API_URL || '/api';
-    const backendUrl = apiUrl.replace(/\/api$/, '');
-    if (logo.startsWith('/uploads')) {
-      return `${backendUrl}${logo}`;
-    }
-    return logo;
-  };
-
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -188,7 +178,7 @@ const UserManagement = () => {
             placeholder="Search by name, email or tier..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-slate-800/50 border border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:border-[#00f0ff] focus:shadow-[0_0_10px_rgba(0,240,255,0.15)] transition-all duration-300"
+            className="w-full bg-slate-800/50 border border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:border-secondary focus:shadow-[0_0_10px_rgba(0,240,255,0.15)] transition-all duration-300"
           />
         </div>
       </div>
@@ -199,7 +189,7 @@ const UserManagement = () => {
       <div className="glass-panel overflow-hidden rounded-2xl">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#00f0ff]"></div>
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-secondary"></div>
             <p className="text-xs text-slate-500">Retrieving subscriber data...</p>
           </div>
         ) : (
@@ -233,8 +223,8 @@ const UserManagement = () => {
                         <div className="flex items-center gap-3">
                           <div className={`w-10 h-10 rounded-full flex items-center justify-center font-extrabold text-xs shadow-md border ${
                             user.isPremium 
-                              ? 'bg-gradient-to-tr from-[#a855f7] to-[#ec4899] text-white border-purple-500/30' 
-                              : 'bg-gradient-to-tr from-[#3b82f6] to-[#00f0ff] text-slate-900 border-blue-500/20'
+                              ? 'bg-linear-to-tr from-purple-500 to-pink-500 text-white border-purple-500/30' 
+                              : 'bg-linear-to-tr from-blue-500 to-secondary text-slate-900 border-blue-500/20'
                           }`}>
                             {getInitials(user.name)}
                           </div>
@@ -295,8 +285,8 @@ const UserManagement = () => {
                       <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                         <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider uppercase ${
                           user.isActive 
-                            ? 'bg-[#10b981]/15 text-[#10b981] border border-[#10b981]/25' 
-                            : 'bg-[#ef4444]/15 text-[#ef4444] border border-[#ef4444]/25'
+                            ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/25' 
+                            : 'bg-red-500/15 text-red-500 border border-red-500/25'
                         }`}>
                           {user.isActive ? 'Active' : 'Suspended'}
                         </span>
@@ -307,14 +297,14 @@ const UserManagement = () => {
                         <div className="flex items-center justify-end gap-1.5">
                           <button 
                             onClick={() => handleViewDetails(user._id)}
-                            className="p-1.5 text-slate-500 hover:text-[#00f0ff] hover:bg-[#00f0ff]/10 rounded-lg transition-colors cursor-pointer"
+                            className="p-1.5 text-slate-500 hover:text-secondary hover:bg-secondary/10 rounded-lg transition-colors cursor-pointer"
                             title="Telemetry Details"
                           >
                             <Eye size={16} />
                           </button>
                           <button 
                             onClick={() => handleOpenEditModal(user)}
-                            className="p-1.5 text-slate-500 hover:text-[#a855f7] hover:bg-[#a855f7]/10 rounded-lg transition-colors cursor-pointer"
+                            className="p-1.5 text-slate-500 hover:text-purple-500 hover:bg-purple-500/10 rounded-lg transition-colors cursor-pointer"
                             title="Edit Profile"
                           >
                             <Edit2 size={16} />
@@ -323,8 +313,8 @@ const UserManagement = () => {
                             onClick={() => handleToggleStatus(user._id)}
                             className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                               user.isActive 
-                                ? 'text-slate-500 hover:text-[#ef4444] hover:bg-[#ef4444]/10' 
-                                : 'text-[#10b981] bg-[#10b981]/10 hover:bg-[#10b981]/20'
+                                ? 'text-slate-500 hover:text-red-500 hover:bg-red-500/10' 
+                                : 'text-emerald-500 bg-emerald-500/10 hover:bg-emerald-500/20'
                             }`}
                             title={user.isActive ? 'Suspend Account' : 'Activate Account'}
                           >
@@ -361,7 +351,7 @@ const UserManagement = () => {
           <div className="bg-[#1e293b]/95 border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
             <div className="p-6 border-b border-white/5 flex items-center justify-between">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <UserCheck className="text-[#00f0ff]" />
+                <UserCheck className="text-secondary" />
                 Subscriber Detail File
               </h2>
               <button
@@ -378,8 +368,8 @@ const UserManagement = () => {
               <div className="flex items-center gap-4 p-4 bg-slate-900/40 rounded-xl border border-white/5">
                 <div className={`w-16 h-16 rounded-full flex items-center justify-center font-black text-xl shadow-lg border ${
                   selectedUser.isPremium 
-                    ? 'bg-gradient-to-tr from-[#a855f7] to-[#ec4899] text-white border-purple-500/30' 
-                    : 'bg-gradient-to-tr from-[#3b82f6] to-[#00f0ff] text-slate-900 border-blue-500/20'
+                    ? 'bg-linear-to-tr from-purple-500 to-pink-500 text-white border-purple-500/30' 
+                    : 'bg-linear-to-tr from-blue-500 to-secondary text-slate-900 border-blue-500/20'
                 }`}>
                   {getInitials(selectedUser.name)}
                 </div>
@@ -391,8 +381,8 @@ const UserManagement = () => {
                   <div className="flex items-center gap-2 mt-2">
                     <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${
                       selectedUser.isActive 
-                        ? 'bg-[#10b981]/15 text-[#10b981] border border-[#10b981]/25' 
-                        : 'bg-[#ef4444]/15 text-[#ef4444] border border-[#ef4444]/25'
+                        ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/25' 
+                        : 'bg-red-500/15 text-red-500 border border-red-500/25'
                     }`}>
                       {selectedUser.isActive ? 'Active' : 'Suspended'}
                     </span>
@@ -439,18 +429,14 @@ const UserManagement = () => {
                     {selectedUser.subscriptions.map((sub: any) => (
                       <div key={sub._id} className="bg-slate-900/40 p-4 rounded-xl border border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                          {sub.ottPlatformId?.logo ? (
-                            <img 
-                              src={getLogoUrl(sub.ottPlatformId.logo)} 
-                              alt={sub.ottPlatformId.name} 
-                              className="w-10 h-10 object-contain rounded-xl bg-slate-800 p-1 border border-slate-700" 
-                              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                          <div className="w-10 h-10 rounded-xl bg-slate-800 p-1 border border-slate-700 flex items-center justify-center">
+                            <PlatformLogo 
+                              src={sub.ottPlatformId?.logo} 
+                              name={sub.ottPlatformId?.name || 'Platform'} 
+                              className="w-full h-full object-contain rounded-lg"
+                              fallbackClassName="text-sm font-bold text-slate-400"
                             />
-                          ) : (
-                            <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center font-bold text-white text-xs border border-slate-700">
-                              {sub.ottPlatformId?.name?.charAt(0) || 'P'}
-                            </div>
-                          )}
+                          </div>
                           <div>
                             <p className="text-sm font-bold text-white">{sub.ottPlatformId?.name || sub.platformName || 'OTT Streaming'}</p>
                             <p className="text-xs text-slate-400">{sub.planName} tier · ${sub.subscriptionCost}/mo</p>
@@ -460,8 +446,8 @@ const UserManagement = () => {
                         <div className="flex items-center gap-4 justify-between md:justify-end">
                           <span className={`px-2.5 py-0.5 rounded text-[10px] font-black uppercase ${
                             sub.status === 'active' 
-                              ? 'bg-[#10b981]/15 text-[#10b981] border border-[#10b981]/25' 
-                              : 'bg-[#ef4444]/15 text-[#ef4444] border border-[#ef4444]/25'
+                              ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/25' 
+                              : 'bg-red-500/15 text-red-500 border border-red-500/25'
                           }`}>
                             {sub.status}
                           </span>
@@ -508,7 +494,7 @@ const UserManagement = () => {
                   type="text" 
                   value={editForm.name}
                   onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                  className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 px-4 text-white focus:outline-none focus:border-[#a855f7] text-sm"
+                  className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 px-4 text-white focus:outline-none focus:border-purple-500 text-sm"
                   required
                 />
               </div>
@@ -519,7 +505,7 @@ const UserManagement = () => {
                   type="email" 
                   value={editForm.email}
                   onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                  className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 px-4 text-white focus:outline-none focus:border-[#a855f7] text-sm"
+                  className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 px-4 text-white focus:outline-none focus:border-purple-500 text-sm"
                   required
                 />
               </div>
@@ -530,7 +516,7 @@ const UserManagement = () => {
                   type="number" 
                   value={editForm.totalRenewals}
                   onChange={(e) => setEditForm({ ...editForm, totalRenewals: parseInt(e.target.value) || 0 })}
-                  className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 px-4 text-white focus:outline-none focus:border-[#a855f7] text-sm"
+                  className="w-full bg-slate-900/60 border border-slate-700 rounded-xl py-2 px-4 text-white focus:outline-none focus:border-purple-500 text-sm"
                   min="0"
                 />
               </div>
@@ -546,7 +532,7 @@ const UserManagement = () => {
                     type="checkbox" 
                     checked={editForm.isPremium}
                     onChange={(e) => setEditForm({ ...editForm, isPremium: e.target.checked })}
-                    className="w-9 h-5 bg-slate-800 checked:bg-[#a855f7] rounded-full appearance-none relative after:absolute after:top-[2px] after:left-[2px] after:w-4 after:h-4 after:bg-slate-400 after:rounded-full after:transition-all checked:after:translate-x-4 checked:after:bg-[#0f172a] cursor-pointer"
+                    className="w-9 h-5 bg-slate-800 checked:bg-purple-500 rounded-full appearance-none relative after:absolute after:top-[2px] after:left-[2px] after:w-4 after:h-4 after:bg-slate-400 after:rounded-full after:transition-all checked:after:translate-x-4 checked:after:bg-[#0f172a] cursor-pointer"
                   />
                 </label>
 
@@ -559,7 +545,7 @@ const UserManagement = () => {
                     type="checkbox" 
                     checked={editForm.isActive}
                     onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })}
-                    className="w-9 h-5 bg-slate-800 checked:bg-[#10b981] rounded-full appearance-none relative after:absolute after:top-[2px] after:left-[2px] after:w-4 after:h-4 after:bg-slate-400 after:rounded-full after:transition-all checked:after:translate-x-4 checked:after:bg-[#0f172a] cursor-pointer"
+                    className="w-9 h-5 bg-slate-800 checked:bg-emerald-500 rounded-full appearance-none relative after:absolute after:top-[2px] after:left-[2px] after:w-4 after:h-4 after:bg-slate-400 after:rounded-full after:transition-all checked:after:translate-x-4 checked:after:bg-[#0f172a] cursor-pointer"
                   />
                 </label>
               </div>
@@ -574,7 +560,7 @@ const UserManagement = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl text-xs font-bold shadow-md cursor-pointer transition-all flex items-center justify-center gap-1.5"
+                  className="flex-1 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-xl text-xs font-bold shadow-md cursor-pointer transition-all flex items-center justify-center gap-1.5"
                 >
                   <Check size={14} />
                   Save Changes

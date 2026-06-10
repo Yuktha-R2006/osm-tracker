@@ -2,18 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import PlatformLogo from './PlatformLogo';
 
 const SubscriptionCard = ({ subscription }) => {
-  const getLogoUrl = (logo?: string) => {
-    if (!logo) return '';
-    if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
-    const apiUrl = (import.meta as any).env.VITE_API_URL || '/api';
-    const backendUrl = apiUrl.replace(/\/api$/, '');
-    if (logo.startsWith('/uploads')) {
-      return `${backendUrl}${logo}`;
-    }
-    return logo;
-  };
 
   const { searchQuery } = useAuth();
   const { _id, ottPlatformId, planName, expiryDate, status, subscriptionCost } = subscription;
@@ -42,7 +33,7 @@ const SubscriptionCard = ({ subscription }) => {
     if (name.includes('disney')) return 'from-indigo-600 to-indigo-400';
     if (name.includes('viki')) return 'from-purple-600 to-purple-400';
     if (name.includes('iqiyi')) return 'from-green-600 to-green-400';
-    return 'from-[#ff0055] to-[#00f0ff]';
+    return 'from-primary to-secondary';
   };
 
   const highlightText = (text: string, search: string) => {
@@ -52,7 +43,7 @@ const SubscriptionCard = ({ subscription }) => {
       <span>
         {parts.map((part, i) => 
           part.toLowerCase() === search.toLowerCase() ? (
-            <mark key={i} className="bg-[#00f0ff]/20 text-[#00f0ff] rounded-sm px-0.5">{part}</mark>
+            <mark key={i} className="bg-secondary/20 text-secondary rounded-sm px-0.5">{part}</mark>
           ) : (
             part
           )
@@ -62,18 +53,19 @@ const SubscriptionCard = ({ subscription }) => {
   };
 
   return (
-    <div className="glass-panel backdrop-blur-xl bg-white/5 border border-white/10 p-5 hover:border-white/20 transition-all duration-300 group flex flex-col h-full relative overflow-hidden hover:scale-[1.02] hover:shadow-2xl hover:shadow-black/30 animate-in zoom-in-95 duration-300">
+    <div className="glass-panel backdrop-blur-xl bg-white/5 border border-white/10 p-5 hover:border-white/20 transition-all duration-300 group flex flex-col h-full relative overflow-hidden hover:scale-[1.02] hover:shadow-2xl hover:shadow-black/30 animate-in zoom-in-95">
       {/* Decorative gradient blob based on platform */}
-      <div className={`absolute -right-8 -top-8 w-32 h-32 rounded-full blur-3xl opacity-30 pointer-events-none bg-gradient-to-br ${getPlatformColor()}`}></div>
+      <div className={`absolute -right-8 -top-8 w-32 h-32 rounded-full blur-3xl opacity-30 pointer-events-none bg-linear-to-br ${getPlatformColor()}`}></div>
 
       <div className="flex justify-between items-start mb-4 relative z-10">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-900/60 backdrop-blur-sm p-1 flex items-center justify-center border border-white/10 group-hover:border-white/20 transition-all duration-300 group-hover:scale-110">
-            {ottPlatformId?.logo ? (
-              <img src={getLogoUrl(ottPlatformId.logo)} alt={ottPlatformId.name} className="w-full h-full object-contain rounded-lg" />
-            ) : (
-              <div className="text-xs text-center text-slate-400">{ottPlatformId?.name}</div>
-            )}
+            <PlatformLogo 
+              src={ottPlatformId?.logo} 
+              name={ottPlatformId?.name || 'Platform'} 
+              className="w-full h-full object-contain rounded-lg"
+              fallbackClassName="text-xs text-center text-slate-400"
+            />
           </div>
           <div>
             <h3 className="font-bold text-lg text-white">
@@ -106,7 +98,7 @@ const SubscriptionCard = ({ subscription }) => {
 
         <Link
           to={`/subscription/${_id}`}
-          className="block w-full py-2.5 mt-2 bg-slate-800/60 backdrop-blur-sm hover:bg-slate-700/60 text-center rounded-lg text-sm font-medium transition-all duration-300 border border-white/10 hover:border-white/20 hover:shadow-lg hover:shadow-[#00f0ff]/20"
+          className="block w-full py-2.5 mt-2 bg-slate-800/60 backdrop-blur-sm hover:bg-slate-700/60 text-center rounded-lg text-sm font-medium transition-all duration-300 border border-white/10 hover:border-white/20 hover:shadow-lg hover:shadow-secondary/20"
         >
           View Details
         </Link>

@@ -15,10 +15,11 @@ const checkExpiries = async () => {
     }).populate('ottPlatformId');
 
     for (let sub of expiringSoon) {
+      const platformName = sub.ottPlatformId ? sub.ottPlatformId.name : 'Platform';
       // Create notification
       await Notification.create({
         userId: sub.userId,
-        message: `Your ${sub.ottPlatformId.name} subscription (${sub.planName}) is expiring soon on ${sub.expiryDate.toDateString()}`,
+        message: `Your ${platformName} subscription (${sub.planName}) is expiring soon on ${sub.expiryDate.toDateString()}`,
         type: 'expiry'
       });
     }
@@ -33,9 +34,10 @@ const checkExpiries = async () => {
       sub.status = 'expired';
       await sub.save();
       
+      const platformName = sub.ottPlatformId ? sub.ottPlatformId.name : 'Platform';
       await Notification.create({
         userId: sub.userId,
-        message: `Your ${sub.ottPlatformId.name} subscription has expired.`,
+        message: `Your ${platformName} subscription has expired.`,
         type: 'expired'
       });
     }

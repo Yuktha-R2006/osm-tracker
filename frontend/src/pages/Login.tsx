@@ -35,13 +35,13 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0f172a] relative overflow-hidden px-4">
       {/* Animated gradient background */}
-      <div className="absolute top-[-20%] right-[-10%] w-96 h-96 bg-[#ff0055]/30 rounded-full blur-[120px] pointer-events-none animate-pulse"></div>
-      <div className="absolute bottom-[-20%] left-[-10%] w-96 h-96 bg-[#00f0ff]/30 rounded-full blur-[120px] pointer-events-none animate-pulse" style={{ animationDelay: '1s' }}></div>
+      <div className="absolute top-[-20%] right-[-10%] w-96 h-96 bg-primary/30 rounded-full blur-[120px] pointer-events-none animate-pulse"></div>
+      <div className="absolute bottom-[-20%] left-[-10%] w-96 h-96 bg-secondary/30 rounded-full blur-[120px] pointer-events-none animate-pulse" style={{ animationDelay: '1s' }}></div>
       <div className="absolute top-[30%] left-[20%] w-64 h-64 bg-[#a855f7]/20 rounded-full blur-[100px] pointer-events-none animate-pulse" style={{ animationDelay: '2s' }}></div>
       
       <div className="w-full max-w-md p-8 glass-panel z-10 backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl shadow-black/50">
         <div className="text-center mb-6">
-          <MonitorPlay size={48} className="mx-auto text-[#ff0055] mb-4 drop-shadow-[0_0_20px_rgba(255,0,85,0.5)]" />
+          <MonitorPlay size={48} className="mx-auto text-primary mb-4 drop-shadow-[0_0_20px_rgba(255,0,85,0.5)]" />
         </div>
 
         {/* Role Selector Toggle */}
@@ -52,7 +52,7 @@ const Login = () => {
               onClick={() => setSelectedRole('user')}
               className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all duration-300 ${
                 selectedRole === 'user'
-                  ? 'bg-gradient-to-r from-[#ff0055] to-[#ff0055]/80 text-white shadow-lg shadow-[#ff0055]/30 scale-105'
+                  ? 'bg-linear-to-r from-primary to-primary/80 text-white shadow-lg shadow-primary/30 scale-105'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
@@ -64,7 +64,7 @@ const Login = () => {
               onClick={() => setSelectedRole('admin')}
               className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all duration-300 ${
                 selectedRole === 'admin'
-                  ? 'bg-gradient-to-r from-[#00f0ff] to-[#00f0ff]/80 text-slate-900 shadow-lg shadow-[#00f0ff]/30 scale-105'
+                  ? 'bg-linear-to-r from-secondary to-secondary/80 text-slate-900 shadow-lg shadow-secondary/30 scale-105'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
@@ -75,7 +75,7 @@ const Login = () => {
         </div>
 
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">Welcome Back</h1>
+          <h1 className="text-3xl font-bold mb-2 bg-linear-to-r from-white to-slate-300 bg-clip-text text-transparent">Welcome Back</h1>
           <p className="text-slate-400">Sign in to manage your subscriptions</p>
         </div>
 
@@ -91,7 +91,7 @@ const Login = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-[#00f0ff] focus:shadow-[0_0_20px_rgba(0,240,255,0.3)] transition-all duration-300"
+                className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-secondary focus:shadow-[0_0_20px_rgba(0,240,255,0.3)] transition-all duration-300"
                 placeholder="Enter your email"
               />
             </div>
@@ -105,21 +105,21 @@ const Login = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-[#00f0ff] focus:shadow-[0_0_20px_rgba(0,240,255,0.3)] transition-all duration-300"
+                className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-secondary focus:shadow-[0_0_20px_rgba(0,240,255,0.3)] transition-all duration-300"
                 placeholder="Enter your password"
               />
             </div>
           </div>
           <button
             type="submit"
-            className="w-full py-3 bg-gradient-to-r from-[#ff0055] to-[#ff0055]/80 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-[#ff0055]/40 hover:scale-[1.02] transition-all duration-300"
+            className="w-full py-3 bg-linear-to-r from-primary to-primary/80 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-primary/40 hover:scale-[1.02] transition-all duration-300"
           >
             Sign In
           </button>
         </form>
         
         <p className="text-center text-slate-400 mt-6">
-          Don't have an account? <Link to="/signup" className="text-[#00f0ff] hover:underline">Sign up</Link>
+          Don't have an account? <Link to="/signup" className="text-secondary hover:underline">Sign up</Link>
         </p>
       </div>
     </div>

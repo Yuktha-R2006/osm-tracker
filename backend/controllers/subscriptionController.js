@@ -75,7 +75,7 @@ const updateSubscription = async (req, res, next) => {
     const updatedSubscription = await Subscription.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true }).populate('ottPlatformId');
     
     // Generate appropriate notifications based on what changed
-    const platformName = updatedSubscription.ottPlatformId.name;
+    const platformName = updatedSubscription.ottPlatformId ? updatedSubscription.ottPlatformId.name : 'Platform';
     
     if (oldStatus !== 'active' && updatedSubscription.status === 'active') {
       await Notification.create({
@@ -120,7 +120,7 @@ const deleteSubscription = async (req, res, next) => {
       return res.status(401).json({ message: 'User not authorized' });
     }
 
-    const platformName = subscription.ottPlatformId.name;
+    const platformName = subscription.ottPlatformId ? subscription.ottPlatformId.name : 'Platform';
 
     subscription.status = 'cancelled';
     await subscription.save();

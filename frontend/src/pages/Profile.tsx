@@ -132,7 +132,7 @@ const Profile = () => {
     <div className="max-w-6xl mx-auto pb-20 md:pb-0 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">Profile & Settings</h1>
+          <h1 className="text-3xl font-bold mb-2 bg-linear-to-r from-white to-slate-300 bg-clip-text text-transparent">Profile & Settings</h1>
           <p className="text-slate-400">Manage your account and preferences</p>
         </div>
         
@@ -142,7 +142,7 @@ const Profile = () => {
             onClick={() => setSearchParams({ tab: 'profile' })}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 cursor-pointer ${
               activeTab === 'profile' 
-                ? 'bg-gradient-to-r from-[#ff0055] to-[#ff0055]/85 text-white' 
+                ? 'bg-linear-to-r from-primary to-primary/85 text-white' 
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -152,7 +152,7 @@ const Profile = () => {
             onClick={() => setSearchParams({ tab: 'settings' })}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 cursor-pointer ${
               activeTab === 'settings' 
-                ? 'bg-gradient-to-r from-[#00f0ff] to-[#00f0ff]/85 text-slate-900' 
+                ? 'bg-linear-to-r from-secondary to-secondary/85 text-slate-900' 
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -167,9 +167,9 @@ const Profile = () => {
           
           {activeTab === 'profile' ? (
             <div className="glass-panel backdrop-blur-xl bg-white/5 border border-white/10 p-8 text-center relative overflow-hidden transition-all duration-300">
-              <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-br from-[#ff0055]/30 to-[#00f0ff]/30 animate-pulse-glow"></div>
+              <div className="absolute top-0 left-0 right-0 h-32 bg-linear-to-br from-primary/30 to-secondary/30 animate-pulse-glow"></div>
               
-              <div className="w-28 h-28 rounded-full bg-slate-900/60 backdrop-blur-sm border-4 border-[#0f172a] mx-auto mb-4 relative z-10 flex items-center justify-center overflow-hidden shadow-2xl shadow-black/30 hover:scale-105 transition-transform duration-300">
+              <div className="w-28 h-28 rounded-full bg-slate-900/60 backdrop-blur-sm border-4 border-dark-200 mx-auto mb-4 relative z-10 flex items-center justify-center overflow-hidden shadow-2xl shadow-black/30 hover:scale-105 transition-transform duration-300">
                 <span className="text-3xl font-extrabold text-white">
                   {getInitials(user?.name)}
                 </span>
@@ -181,7 +181,7 @@ const Profile = () => {
               </p>
               
               <div className="flex flex-col gap-2 items-center mb-6">
-                <div className="inline-flex items-center gap-1 px-3 py-1 bg-[#00f0ff]/10 border border-[#00f0ff]/30 rounded-full text-xs text-[#00f0ff]">
+                <div className="inline-flex items-center gap-1 px-3 py-1 bg-secondary/10 border border-secondary/30 rounded-full text-xs text-secondary">
                   <Shield size={12} /> {user?.isPremium ? 'Premium Member' : 'Normal User'}
                 </div>
                 {user?.favoriteOTT && (
@@ -202,7 +202,7 @@ const Profile = () => {
                   <p className="text-xs text-slate-400 uppercase tracking-wider">Active Subs</p>
                 </div>
                 <div className="p-3 bg-slate-900/30 backdrop-blur-sm rounded-xl border border-white/5 hover:border-white/10 transition-all duration-300">
-                  <p className="text-3xl font-bold text-[#00f0ff] mb-1">${stats.cost.toFixed(2)}</p>
+                  <p className="text-3xl font-bold text-secondary mb-1">${stats.cost.toFixed(2)}</p>
                   <p className="text-xs text-slate-400 uppercase tracking-wider">Monthly Cost</p>
                 </div>
               </div>
@@ -216,9 +216,9 @@ const Profile = () => {
               </button>
             </div>
           ) : (
-            <div className="glass-panel backdrop-blur-xl bg-white/5 border border-[#00f0ff]/30 shadow-[0_0_20px_rgba(0,240,255,0.15)] p-6 transition-all duration-300">
+            <div className="glass-panel backdrop-blur-xl bg-white/5 border border-secondary/30 shadow-[0_0_20px_rgba(0,240,255,0.15)] p-6 transition-all duration-300">
               <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                <Settings className="text-[#00f0ff] animate-spin-slow" size={20} /> App Settings
+                <Settings className="text-secondary animate-spin-slow" size={20} /> App Settings
               </h3>
               
               <div className="space-y-4">
@@ -232,7 +232,7 @@ const Profile = () => {
                     onClick={handleToggleEmail}
                     className={`w-12 h-6 rounded-full relative cursor-pointer transition-all duration-300 ${
                       user?.emailNotifications 
-                        ? 'bg-[#ff0055] shadow-[0_0_10px_rgba(255,0,85,0.4)]' 
+                        ? 'bg-primary shadow-[0_0_10px_rgba(255,0,85,0.4)]' 
                         : 'bg-slate-700 border border-white/5'
                     }`}
                   >
@@ -252,7 +252,7 @@ const Profile = () => {
                     onClick={handleToggleAutoRenewal}
                     className={`w-12 h-6 rounded-full relative cursor-pointer transition-all duration-300 ${
                       user?.autoRenewalAlerts 
-                        ? 'bg-[#ff0055] shadow-[0_0_10px_rgba(255,0,85,0.4)]' 
+                        ? 'bg-primary shadow-[0_0_10px_rgba(255,0,85,0.4)]' 
                         : 'bg-slate-700 border border-white/5'
                     }`}
                   >
@@ -272,7 +272,7 @@ const Profile = () => {
                     onClick={handleToggleDarkMode}
                     className={`w-12 h-6 rounded-full relative cursor-pointer transition-all duration-300 ${
                       theme === 'dark' 
-                        ? 'bg-[#00f0ff] shadow-[0_0_10px_rgba(0,240,255,0.4)]' 
+                        ? 'bg-secondary shadow-[0_0_10px_rgba(0,240,255,0.4)]' 
                         : 'bg-slate-700 border border-white/5'
                     }`}
                   >
@@ -309,13 +309,13 @@ const Profile = () => {
           <div className="glass-panel backdrop-blur-xl bg-white/5 border border-white/10 p-6 h-full flex flex-col min-h-[500px]">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <Bell className="text-[#00f0ff]" /> Notifications Feed
+                <Bell className="text-secondary" /> Notifications Feed
               </h3>
               
               {notifications.some(n => !n.isRead) && (
                 <button 
                   onClick={handleMarkAsRead}
-                  className="text-xs text-[#00f0ff] hover:text-white transition-colors hover:scale-105 transform duration-200 cursor-pointer"
+                  className="text-xs text-secondary hover:text-white transition-colors hover:scale-105 transform duration-200 cursor-pointer"
                 >
                   Mark all as read
                 </button>
@@ -339,7 +339,7 @@ const Profile = () => {
                     }`}
                   >
                     {!notif.isRead && (
-                      <div className="absolute -left-1.5 -top-1.5 w-3 h-3 bg-[#ff0055] rounded-full border-2 border-[#1e293b] shadow-[0_0_10px_rgba(255,0,85,0.5)]"></div>
+                      <div className="absolute -left-1.5 -top-1.5 w-3 h-3 bg-primary rounded-full border-2 border-dark-300 shadow-[0_0_10px_rgba(255,0,85,0.5)]"></div>
                     )}
                     <div className="mt-1">
                       {getNotificationIcon(notif.type)}
@@ -365,7 +365,7 @@ const Profile = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-300">
           <div className="bg-[#1e293b]/80 backdrop-blur-xl border border-white/10 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl shadow-black/50 animate-in zoom-in-95 duration-300">
             <div className="flex justify-between items-center p-5 border-b border-white/10">
-              <h2 className="text-xl font-bold text-white bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">Edit Profile</h2>
+              <h2 className="text-xl font-bold bg-linear-to-r from-white to-slate-300 bg-clip-text text-transparent">Edit Profile</h2>
               <button onClick={() => setIsEditProfileOpen(false)} className="text-slate-400 hover:text-white transition-colors hover:scale-110 transform duration-200 cursor-pointer">
                 <X size={20} />
               </button>
@@ -379,7 +379,7 @@ const Profile = () => {
                   required
                   value={profileForm.name}
                   onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
-                  className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white placeholder-slate-500 focus:outline-none focus:border-[#00f0ff] focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
+                  className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white placeholder-slate-500 focus:outline-none focus:border-secondary focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
                 />
               </div>
 
@@ -390,7 +390,7 @@ const Profile = () => {
                   required
                   value={profileForm.email}
                   onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
-                  className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white placeholder-slate-500 focus:outline-none focus:border-[#00f0ff] focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
+                  className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white placeholder-slate-500 focus:outline-none focus:border-secondary focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
                 />
               </div>
 
@@ -401,7 +401,7 @@ const Profile = () => {
                   placeholder="e.g. Netflix"
                   value={profileForm.favoriteOTT}
                   onChange={(e) => setProfileForm({...profileForm, favoriteOTT: e.target.value})}
-                  className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white placeholder-slate-500 focus:outline-none focus:border-[#00f0ff] focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
+                  className="w-full bg-slate-900/60 backdrop-blur-sm border border-white/10 rounded-lg py-2.5 px-3 text-white placeholder-slate-500 focus:outline-none focus:border-secondary focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
                 />
               </div>
 
@@ -415,7 +415,7 @@ const Profile = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-gradient-to-r from-[#ff0055] to-[#ff0055]/80 hover:from-[#ff0055]/90 text-white rounded-lg font-bold transition-all duration-300 shadow-[0_0_15px_rgba(255,0,85,0.3)] hover:scale-105 cursor-pointer"
+                  className="px-6 py-2 bg-linear-to-r from-primary to-primary/80 hover:from-primary/90 text-white rounded-lg font-bold transition-all duration-300 shadow-[0_0_15px_rgba(255,0,85,0.3)] hover:scale-105 cursor-pointer"
                 >
                   Save Changes
                 </button>
