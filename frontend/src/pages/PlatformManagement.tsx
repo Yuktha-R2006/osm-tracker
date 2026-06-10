@@ -25,6 +25,32 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 import PlatformLogo from '../components/PlatformLogo';
 
+const getLogoUrl = (logo?: string) => {
+  if (!logo) return '';
+  if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
+  
+  let apiUrl = (import.meta as any).env.VITE_API_URL || '/api';
+  apiUrl = apiUrl.trim().replace(/\/$/, '');
+  
+  if (!apiUrl.endsWith('/api')) {
+    apiUrl = `${apiUrl}/api`;
+  }
+  
+  let backendUrl = apiUrl.replace(/\/api$/, '');
+  
+  if (!backendUrl && typeof window !== 'undefined') {
+    const port = window.location.port;
+    if (port && port !== '5000') {
+      backendUrl = `${window.location.protocol}//${window.location.hostname}:5000`;
+    }
+  }
+  
+  if (logo.startsWith('/uploads')) {
+    return `${backendUrl}${logo}`;
+  }
+  return logo;
+};
+
 const PlatformManagement = () => {
 
   const [platforms, setPlatforms] = useState<any[]>([]);
@@ -278,12 +304,27 @@ const PlatformManagement = () => {
                 <div>
                   <div className="flex items-center gap-4 mb-5 mt-4">
                     <div className="w-16 h-16 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center p-2 group-hover:scale-105 transition-all duration-300 shadow-inner shrink-0 relative overflow-hidden">
-                      <PlatformLogo 
-                        src={platform.logo} 
-                        name={platform.name} 
-                        className="max-w-full max-h-full object-contain rounded-lg"
-                        fallbackClassName="text-xl font-black text-slate-500"
-                      />
+                      {platform.logo ? (
+                        <img 
+                          src={getLogoUrl(platform.logo)} 
+                          alt={platform.name} 
+                          className="max-w-full max-h-full object-contain rounded-lg"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            target.style.display = 'none';
+                            const sibling = target.nextElementSibling;
+                            if (sibling) {
+                              (sibling as HTMLElement).style.display = 'block';
+                            }
+                          }}
+                        />
+                      ) : null}
+                      <span 
+                        className="text-xl font-black text-slate-500" 
+                        style={{ display: platform.logo ? 'none' : 'block' }}
+                      >
+                        {platform.name?.charAt(0) || 'P'}
+                      </span>
                     </div>
                     <div className="min-w-0">
                       <h3 className="text-lg font-bold text-white truncate leading-snug">{platform.name}</h3>

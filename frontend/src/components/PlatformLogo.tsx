@@ -23,8 +23,24 @@ const PlatformLogo: React.FC<PlatformLogoProps> = ({
   const getLogoUrl = (logo?: string) => {
     if (!logo) return '';
     if (logo.startsWith('http') || logo.startsWith('data:')) return logo;
-    const apiUrl = (import.meta as any).env.VITE_API_URL || '/api';
-    const backendUrl = apiUrl.replace(/\/api$/, '');
+    
+    let apiUrl = (import.meta as any).env.VITE_API_URL || '/api';
+    apiUrl = apiUrl.trim().replace(/\/$/, ''); // strip trailing slash
+    
+    if (!apiUrl.endsWith('/api')) {
+      apiUrl = `${apiUrl}/api`;
+    }
+    
+    let backendUrl = apiUrl.replace(/\/api$/, '');
+    
+    // Fallback to local backend port 5000 in development if accessed via a different port (like Vite dev server)
+    if (!backendUrl && typeof window !== 'undefined') {
+      const port = window.location.port;
+      if (port && port !== '5000') {
+        backendUrl = `${window.location.protocol}//${window.location.hostname}:5000`;
+      }
+    }
+    
     if (logo.startsWith('/uploads')) {
       return `${backendUrl}${logo}`;
     }
