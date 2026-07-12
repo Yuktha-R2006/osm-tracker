@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   MonitorPlay, 
   Plus, 
@@ -24,6 +24,7 @@ import {
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import PlatformLogo from '../components/PlatformLogo';
+import { useData } from '../context/DataContext';
 
 const getLogoUrl = (logo?: string) => {
   if (!logo) return '';
@@ -52,9 +53,7 @@ const getLogoUrl = (logo?: string) => {
 };
 
 const PlatformManagement = () => {
-
-  const [platforms, setPlatforms] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { allPlatforms: platforms, loading, refreshAllData } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [selectedAnalyticsPlatform, setSelectedAnalyticsPlatform] = useState<any>(null);
@@ -74,23 +73,6 @@ const PlatformManagement = () => {
   });
   
   const [editingId, setEditingId] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchPlatforms();
-  }, []);
-
-  const fetchPlatforms = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get('/platforms/all');
-      setPlatforms(res.data);
-    } catch (error) {
-      console.error('Failed to fetch platforms', error);
-      toast.error('Failed to retrieve platforms list');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleOpenModal = (platform: any = null) => {
     if (platform) {
@@ -190,12 +172,11 @@ const PlatformManagement = () => {
       if (editingId) {
         await api.put(`/platforms/${editingId}`, payload);
         toast.success('Platform configurations saved successfully');
-        fetchPlatforms();
       } else {
         await api.post('/platforms', payload);
         toast.success('Platform created successfully');
-        fetchPlatforms();
       }
+      await refreshAllData();
       setIsModalOpen(false);
     } catch (error: any) {
       console.error('Failed to save platform', error);
@@ -208,7 +189,7 @@ const PlatformManagement = () => {
       const newStatus = platform.status === 'active' ? 'inactive' : 'active';
       await api.put(`/platforms/${platform._id}`, { status: newStatus });
       toast.success(`Platform ${newStatus === 'active' ? 'activated' : 'disabled'}`);
-      fetchPlatforms();
+      await refreshAllData();
     } catch (error) {
       console.error('Failed to update status', error);
       toast.error('Failed to toggle platform status');
@@ -219,8 +200,8 @@ const PlatformManagement = () => {
     if (window.confirm('Are you sure you want to delete this platform? This will affect users with this subscription.')) {
       try {
         await api.delete(`/platforms/${id}`);
-        setPlatforms(platforms.filter(p => p._id !== id));
         toast.success('Platform removed from service database');
+        await refreshAllData();
       } catch (error) {
         console.error('Failed to delete platform', error);
         toast.error('Failed to delete platform');

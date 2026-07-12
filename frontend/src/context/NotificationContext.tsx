@@ -45,12 +45,12 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   useEffect(() => {
-    if (user) {
+    if (user?._id) {
       fetchNotifications();
     } else {
       setNotifications([]);
     }
-  }, [user]);
+  }, [user?._id]);
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PlatformLogo from '../components/PlatformLogo';
 import { 
   Users, 
@@ -18,10 +18,10 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { useData } from '../context/DataContext';
 
 const UserManagement = () => {
-  const [users, setUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { adminUsers: users, loading, refreshAllData } = useData();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -38,29 +38,12 @@ const UserManagement = () => {
     totalRenewals: 0
   });
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get('/admin/users');
-      setUsers(res.data);
-    } catch (error) {
-      console.error('Failed to fetch users', error);
-      toast.error('Failed to retrieve user list');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to permanently delete this user and all their subscriptions?')) {
       try {
         await api.delete(`/admin/users/${id}`);
-        setUsers(users.filter(user => user._id !== id));
         toast.success('User deleted successfully');
+        await refreshAllData();
       } catch (error) {
         console.error('Failed to delete user', error);
         toast.error('Failed to delete user');
@@ -82,8 +65,8 @@ const UserManagement = () => {
   const handleToggleStatus = async (id: string) => {
     try {
       const res = await api.patch(`/admin/users/${id}/status`);
-      setUsers(users.map(user => user._id === id ? { ...user, isActive: res.data.isActive } : user));
       toast.success(`User ${res.data.isActive ? 'activated' : 'suspended'}`);
+      await refreshAllData();
     } catch (error) {
       console.error('Failed to toggle user status', error);
       toast.error('Failed to toggle user suspension status');
@@ -106,7 +89,7 @@ const UserManagement = () => {
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.put(`/admin/users/${editForm.id}`, {
+      await api.put(`/admin/users/${editForm.id}`, {
         name: editForm.name,
         email: editForm.email,
         isPremium: editForm.isPremium,
@@ -114,17 +97,9 @@ const UserManagement = () => {
         totalRenewals: editForm.totalRenewals
       });
       
-      setUsers(users.map(user => user._id === editForm.id ? { 
-        ...user, 
-        name: res.data.user.name,
-        email: res.data.user.email,
-        isPremium: res.data.user.isPremium,
-        isActive: res.data.user.isActive,
-        totalRenewals: res.data.user.totalRenewals
-      } : user));
-
       setShowEditModal(false);
       toast.success('User updated successfully');
+      await refreshAllData();
     } catch (error: any) {
       console.error(error);
       toast.error(error.response?.data?.message || 'Failed to update user profile');

@@ -32,34 +32,70 @@ const subscriptionSchema = mongoose.Schema({
 
 // Hook to keep requested and compatibility fields perfectly synchronized in database
 subscriptionSchema.pre('save', function() {
-  if (this.platformId && !this.ottPlatformId) {
+  // Synchronize platform IDs
+  if (this.isModified('platformId')) {
     this.ottPlatformId = this.platformId;
-  } else if (this.ottPlatformId && !this.platformId) {
+  } else if (this.isModified('ottPlatformId')) {
     this.platformId = this.ottPlatformId;
+  } else if (!this.platformId && this.ottPlatformId) {
+    this.platformId = this.ottPlatformId;
+  } else if (!this.ottPlatformId && this.platformId) {
+    this.ottPlatformId = this.platformId;
   }
   
-  if (this.subscriptionType && !this.planName) {
+  // Synchronize plan names
+  if (this.isModified('subscriptionType')) {
     this.planName = this.subscriptionType;
-  } else if (this.planName && !this.subscriptionType) {
+  } else if (this.isModified('planName')) {
     this.subscriptionType = this.planName;
+  } else if (!this.subscriptionType && this.planName) {
+    this.subscriptionType = this.planName;
+  } else if (!this.planName && this.subscriptionType) {
+    this.planName = this.subscriptionType;
   }
   
-  if (this.endDate && !this.expiryDate) {
+  // Synchronize expiry/end dates
+  if (this.isModified('endDate')) {
     this.expiryDate = this.endDate;
-  } else if (this.expiryDate && !this.endDate) {
+  } else if (this.isModified('expiryDate')) {
     this.endDate = this.expiryDate;
+  } else if (!this.endDate && this.expiryDate) {
+    this.endDate = this.expiryDate;
+  } else if (!this.expiryDate && this.endDate) {
+    this.expiryDate = this.endDate;
   }
   
-  if (this.autoRenew !== undefined && this.autoRenewal === undefined) {
+  // Synchronize auto renewal toggles
+  if (this.isModified('autoRenew')) {
+    this.autoRenewal = this.autoRenew;
+  } else if (this.isModified('autoRenewal')) {
+    this.autoRenew = this.autoRenewal;
+  } else if (this.autoRenew !== undefined && this.autoRenewal === undefined) {
     this.autoRenewal = this.autoRenew;
   } else if (this.autoRenewal !== undefined && this.autoRenew === undefined) {
     this.autoRenew = this.autoRenewal;
   }
   
-  if (this.cancelled !== undefined && this.isCancelled === undefined) {
+  // Synchronize cancellation flags
+  if (this.isModified('cancelled')) {
+    this.isCancelled = this.cancelled;
+  } else if (this.isModified('isCancelled')) {
+    this.cancelled = this.isCancelled;
+  } else if (this.cancelled !== undefined && this.isCancelled === undefined) {
     this.isCancelled = this.cancelled;
   } else if (this.isCancelled !== undefined && this.cancelled === undefined) {
     this.cancelled = this.isCancelled;
+  }
+
+  // Synchronize status based on cancellation state
+  if (this.status === 'cancelled') {
+    this.cancelled = true;
+    this.isCancelled = true;
+  } else if (this.status === 'active') {
+    this.cancelled = false;
+    this.isCancelled = false;
+  } else if (this.cancelled || this.isCancelled) {
+    this.status = 'cancelled';
   }
 });
 

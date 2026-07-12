@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const platformSchema = mongoose.Schema({
   name: { type: String, required: [true, 'Please add a platform name'], unique: true, trim: true },
-  logo: { type: String, required: [true, 'Please add a logo URL'] },
+  logo: { type: String, default: '' },
   accentColor: { type: String, default: '#ff0055' },
   description: { type: String, default: '' },
   monthlyPrice: { type: Number, default: 0 },

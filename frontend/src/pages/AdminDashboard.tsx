@@ -28,7 +28,6 @@ import {
   Cell 
 } from 'recharts';
 import StatCard from '../components/StatCard';
-import api from '../services/api';
 
 const CustomLineTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -63,8 +62,15 @@ const CustomLineTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
+import { useData } from '../context/DataContext';
+
 const AdminDashboard = () => {
-  const [stats, setStats] = useState<any>({
+  const { adminStats, loading, refreshAllData } = useData();
+  const [isMobile, setIsMobile] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
+  const [visiblePlatforms, setVisiblePlatforms] = useState<Record<string, boolean>>({});
+
+  const stats = adminStats || {
     totalUsers: 0,
     totalPlatforms: 0,
     activeSubscriptions: 0,
@@ -87,29 +93,19 @@ const AdminDashboard = () => {
     barData: [],
     pieData: [],
     areaData: []
-  });
-  const [loading, setLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-  const [isOffline, setIsOffline] = useState(false);
-  const [visiblePlatforms, setVisiblePlatforms] = useState<Record<string, boolean>>({});
+  };
 
   const fetchStats = async () => {
     try {
-      setLoading(true);
-      const res = await api.get('/admin/stats');
-      setStats(res.data);
+      await refreshAllData();
       setIsOffline(false);
     } catch (error) {
-      console.error('Failed to fetch admin dashboard stats from MongoDB', error);
+      console.error('Failed to fetch admin dashboard stats', error);
       setIsOffline(true);
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchStats();
-
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };

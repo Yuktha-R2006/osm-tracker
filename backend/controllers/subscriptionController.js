@@ -1,6 +1,32 @@
 const Subscription = require('../models/SubscriptionModel');
 const OTTPlatform = require('../models/PlatformModel');
 const Notification = require('../models/Notification');
+const User = require('../models/UserModel');
+
+const isPlanPremium = (platformName, planName) => {
+  if (!planName) return false;
+  const pName = planName.toLowerCase();
+  if (pName.includes('premium') || pName.includes('plus') || pName.includes('mega') || pName.includes('super')) {
+    return true;
+  }
+  if (platformName === 'Amazon Prime Video' || platformName === 'Sony LIV' || platformName === 'Zee5') {
+    return true;
+  }
+  return false;
+};
+
+const updateUserPremiumStatus = async (userId) => {
+  const activePremiumSubs = await Subscription.countDocuments({
+    userId,
+    status: 'active',
+    isPremium: true
+  });
+  const user = await User.findById(userId);
+  if (user) {
+    user.membershipType = activePremiumSubs > 0 ? 'premium' : 'standard';
+    await user.save();
+  }
+};
 
 // @desc    Get user subscriptions
 // @route   GET /api/subscriptions
@@ -27,39 +53,92 @@ const createSubscription = async (req, res, next) => {
       return res.status(404).json({ message: 'Platform not found' });
     }
 
-    const subscription = await Subscription.create({
+    const isPremium = isPlanPremium(platform.name, planName);
+
+    // Check if subscription already exists for this platform and user
+    let subscription = await Subscription.findOne({
       userId: req.user._id,
-      ottPlatformId,
-      planName,
-      startDate,
-      expiryDate,
-      subscriptionCost,
-      autoRenewal
+      $or: [
+        { platformId: ottPlatformId },
+        { ottPlatformId: ottPlatformId }
+      ]
     });
 
-    // Update subscribers count
-    platform.subscribers += 1;
-    await platform.save();
+    let isUpdate = false;
+    let wasActive = false;
+
+    if (subscription) {
+      isUpdate = true;
+      wasActive = subscription.status === 'active';
+
+      // Update details
+      subscription.planName = planName;
+      subscription.subscriptionType = planName;
+      subscription.startDate = startDate;
+      subscription.expiryDate = expiryDate;
+      subscription.endDate = expiryDate;
+      subscription.subscriptionCost = subscriptionCost;
+      subscription.autoRenewal = autoRenewal;
+      subscription.autoRenew = autoRenewal;
+      subscription.isPremium = isPremium;
+      subscription.status = 'active';
+      subscription.cancelled = false;
+      subscription.isCancelled = false;
+
+      await subscription.save();
+
+      // Update subscribers count if it was not active
+      if (!wasActive) {
+        platform.subscribers += 1;
+        await platform.save();
+      }
+    } else {
+      subscription = await Subscription.create({
+        userId: req.user._id,
+        ottPlatformId,
+        platformId: ottPlatformId,
+        planName,
+        subscriptionType: planName,
+        startDate,
+        expiryDate,
+        endDate: expiryDate,
+        subscriptionCost,
+        autoRenewal,
+        autoRenew: autoRenewal,
+        isPremium
+      });
+
+      // Update subscribers count
+      platform.subscribers += 1;
+      await platform.save();
+    }
+
+    // Update user premium status
+    await updateUserPremiumStatus(req.user._id);
 
     // Auto-generate notification
     await Notification.create({
       userId: req.user._id,
-      message: `You have successfully added a new subscription for ${platform.name}.`,
+      message: isUpdate 
+        ? `Subscription Updated: You have successfully updated your subscription for ${platform.name}.`
+        : `Subscription Added: You have successfully added a new subscription for ${platform.name}.`,
       type: 'added'
     });
 
-    res.status(201).json(subscription);
+    const populatedSubscription = await Subscription.findById(subscription._id).populate('ottPlatformId');
+    res.status(201).json(populatedSubscription);
   } catch (error) {
     next(error);
   }
 };
+
 
 // @desc    Update subscription
 // @route   PUT /api/subscriptions/:id
 // @access  Private
 const updateSubscription = async (req, res, next) => {
   try {
-    const subscription = await Subscription.findById(req.params.id).populate('ottPlatformId');
+    const subscription = await Subscription.findById(req.params.id);
     
     if (!subscription) {
       return res.status(404).json({ message: 'Subscription not found' });
@@ -72,7 +151,41 @@ const updateSubscription = async (req, res, next) => {
     const oldCost = subscription.subscriptionCost;
     const oldStatus = subscription.status;
 
-    const updatedSubscription = await Subscription.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true }).populate('ottPlatformId');
+    // Apply the updates to the document fields
+    Object.assign(subscription, req.body);
+
+    // Re-calculate isPremium if planName or subscriptionType was modified
+    if (req.body.planName || req.body.subscriptionType) {
+      const planName = req.body.planName || req.body.subscriptionType;
+      const platform = await OTTPlatform.findById(subscription.ottPlatformId || subscription.platformId);
+      if (platform) {
+        subscription.isPremium = isPlanPremium(platform.name, planName);
+      }
+    }
+
+    // Save the document to trigger pre-save hooks
+    await subscription.save();
+
+    // If status changed from active to cancelled/expired, or vice-versa, update the platform's subscribers count
+    if (oldStatus === 'active' && subscription.status !== 'active') {
+      const platform = await OTTPlatform.findById(subscription.ottPlatformId || subscription.platformId);
+      if (platform && platform.subscribers > 0) {
+        platform.subscribers -= 1;
+        await platform.save();
+      }
+    } else if (oldStatus !== 'active' && subscription.status === 'active') {
+      const platform = await OTTPlatform.findById(subscription.ottPlatformId || subscription.platformId);
+      if (platform) {
+        platform.subscribers += 1;
+        await platform.save();
+      }
+    }
+
+    // Update user premium status
+    await updateUserPremiumStatus(req.user._id);
+
+    // Populate after save
+    const updatedSubscription = await Subscription.findById(subscription._id).populate('ottPlatformId');
     
     // Generate appropriate notifications based on what changed
     const platformName = updatedSubscription.ottPlatformId ? updatedSubscription.ottPlatformId.name : 'Platform';
@@ -131,6 +244,9 @@ const deleteSubscription = async (req, res, next) => {
       platform.subscribers -= 1;
       await platform.save();
     }
+
+    // Update user premium status
+    await updateUserPremiumStatus(req.user._id);
 
     await Notification.create({
       userId: req.user._id,

@@ -36,6 +36,7 @@ export interface AuthContextType {
   updateProfile: (data: Partial<User>) => Promise<any>;
   updateSettings: (data: Partial<User>) => Promise<any>;
   deleteAccount: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -115,6 +116,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logout();
   };
 
+  const refreshUser = async (): Promise<void> => {
+    try {
+      const res = await api.get('/auth/profile');
+      setUser(res.data);
+    } catch (error) {
+      console.error('Failed to refresh user profile', error);
+    }
+  };
+
   const isAuthenticated = !!user;
 
   return (
@@ -130,7 +140,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSearchQuery,
       updateProfile,
       updateSettings,
-      deleteAccount
+      deleteAccount,
+      refreshUser
     }}>
       {!loading && children}
     </AuthContext.Provider>

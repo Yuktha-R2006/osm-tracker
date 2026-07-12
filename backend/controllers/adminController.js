@@ -237,9 +237,7 @@ const getStats = async (req, res, next) => {
       };
     }
     
-    const pieData = platformList
-      .filter(p => p.subscribers > 0)
-      .map(p => ({
+    const pieData = platformList.map(p => ({
         name: p.name,
         value: p.subscribers
       }));

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useData } from '../context/DataContext';
 import { 
   User, 
   Mail, 
@@ -21,6 +22,7 @@ import api from '../services/api';
 
 const AdminSettings: React.FC = () => {
   const { user } = useAuth();
+  const { refreshAllData } = useData();
   const [profileForm, setProfileForm] = useState({
     name: '',
     email: '',
@@ -99,6 +101,7 @@ const AdminSettings: React.FC = () => {
           if (idx === backendLogs.length - 1) {
             setIsSimulating(false);
             toast.success('System billing cron executed and database synchronized!');
+            refreshAllData();
           }
         }, (idx + 1) * 800);
       });

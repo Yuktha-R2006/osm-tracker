@@ -3,9 +3,10 @@ import { X, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 import PlatformLogo from './PlatformLogo';
+import { useData } from '../context/DataContext';
 
 const AddSubscriptionModal = ({ isOpen, onClose, onAdd }) => {
-  const [platforms, setPlatforms] = useState([]);
+  const { platforms } = useData();
   const [formData, setFormData] = useState({
     ottPlatformId: '',
     planName: '',
@@ -21,17 +22,9 @@ const AddSubscriptionModal = ({ isOpen, onClose, onAdd }) => {
 
   useEffect(() => {
     if (isOpen) {
-      fetchPlatforms();
       setShowSuccessAnim(false);
-    }
-  }, [isOpen]);
-
-  const fetchPlatforms = async () => {
-    try {
-      const res = await api.get('/platforms');
-      setPlatforms(res.data);
-      if (res.data.length > 0) {
-        const defaultPlatform = res.data[0];
+      if (platforms.length > 0) {
+        const defaultPlatform = platforms[0];
         const defaultPlan = defaultPlatform.plans?.[0];
         const start = new Date();
         const expiry = new Date();
@@ -47,11 +40,8 @@ const AddSubscriptionModal = ({ isOpen, onClose, onAdd }) => {
         });
         setBillingCycle('monthly');
       }
-    } catch (err) {
-      console.error(err);
-      setError('Failed to load platforms');
     }
-  };
+  }, [isOpen, platforms]);
 
   const handlePlatformSelect = (platformId) => {
     const selected = platforms.find(p => p._id === platformId);

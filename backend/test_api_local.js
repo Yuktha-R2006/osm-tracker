@@ -6,7 +6,7 @@ const OTTPlatform = require('./models/OTTPlatform');
 
 async function testApi() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGO_URI || process.env.MONGODB_URI);
     console.log('Connected to DB');
 
     const rawUsers = await User.find({ role: 'user' }).limit(1);

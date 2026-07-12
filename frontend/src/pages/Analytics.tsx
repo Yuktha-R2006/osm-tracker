@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -21,10 +21,13 @@ import {
   Cell, 
   Tooltip 
 } from 'recharts';
-import api from '../services/api';
+import { useData } from '../context/DataContext';
 
 const Analytics = () => {
-  const [stats, setStats] = useState<any>({
+  const { adminStats, loading, refreshAllData } = useData();
+  const [timeRange, setTimeRange] = useState('6m');
+
+  const stats = adminStats || {
     totalUsers: 0,
     totalPlatforms: 0,
     activeSubscriptions: 0,
@@ -46,25 +49,7 @@ const Analytics = () => {
     barData: [],
     pieData: [],
     areaData: []
-  });
-  const [loading, setLoading] = useState(true);
-  const [timeRange, setTimeRange] = useState('6m');
-
-  const fetchStats = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get('/admin/stats');
-      setStats(res.data);
-    } catch (error) {
-      console.error('Failed to load stats for analytics page', error);
-    } finally {
-      setLoading(false);
-    }
   };
-
-  useEffect(() => {
-    fetchStats();
-  }, []);
 
   const COLORS = ['#00f0ff', '#ff0055', '#a855f7', '#3b82f6', '#10b981', '#f59e0b'];
 
@@ -115,7 +100,7 @@ const Analytics = () => {
             <option value="1y">Last 1 Year</option>
           </select>
           <button 
-            onClick={fetchStats}
+            onClick={refreshAllData}
             className="p-2.5 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-white rounded-xl transition-all cursor-pointer hover:border-secondary/50"
             title="Refresh Analysis"
           >

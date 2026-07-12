@@ -1,36 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Plus, PlaySquare, CheckCircle, AlertCircle, Clock, Search, Tv } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import SubscriptionCard from '../components/SubscriptionCard';
 import AddSubscriptionModal from '../components/AddSubscriptionModal';
 import SkeletonCard from '../components/SkeletonCard';
-import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useData } from '../context/DataContext';
 
 const Dashboard = () => {
-  const { user, searchQuery } = useAuth();
-  const [subscriptions, setSubscriptions] = useState([]);
+  const { user, searchQuery, setSearchQuery } = useAuth();
+  const { subscriptions, loading, refreshAllData } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchSubscriptions();
-  }, []);
-
-  const fetchSubscriptions = async () => {
-    try {
-      const res = await api.get('/subscriptions');
-      setSubscriptions(res.data);
-    } catch (error) {
-      console.error('Failed to fetch subscriptions', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAddSubscription = (newSub) => {
-    setSubscriptions(prev => [...prev, newSub]);
-    fetchSubscriptions(); // Refresh to get populated platform data
+  const handleAddSubscription = async (newSub) => {
+    await refreshAllData(); // Sync everything automatically
   };
 
   // Filter subscriptions based on search query
@@ -85,7 +68,7 @@ const Dashboard = () => {
             placeholder="Search platforms or plans..."
             className="w-full bg-slate-900/60 backdrop-blur-sm border border-slate-700/60 rounded-xl py-2.5 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-secondary focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all duration-300"
             value={searchQuery}
-            onChange={(e) => api.get('/auth/profile').then(() => {})} // Just a trigger to test API if needed, or link to context search
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
       </div>

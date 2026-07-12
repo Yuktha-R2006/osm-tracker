@@ -4,12 +4,13 @@ import { ArrowLeft, Calendar, CreditCard, Clock, Trash2, CheckCircle, RefreshCw,
 import toast from 'react-hot-toast';
 import api from '../services/api';
 import PlatformLogo from '../components/PlatformLogo';
+import { useData } from '../context/DataContext';
 
 const SubscriptionDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [subscription, setSubscription] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { subscriptions, loading, refreshAllData } = useData();
+  const subscription = subscriptions.find(s => s._id === id);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState({
     planName: '',
@@ -20,8 +21,10 @@ const SubscriptionDetails = () => {
   });
 
   useEffect(() => {
-    fetchSubscription();
-  }, [id]);
+    if (!loading && !subscription) {
+      navigate('/dashboard');
+    }
+  }, [loading, subscription, navigate]);
 
   useEffect(() => {
     if (subscription) {
@@ -35,29 +38,12 @@ const SubscriptionDetails = () => {
     }
   }, [subscription]);
 
-  const fetchSubscription = async () => {
-    try {
-      const res = await api.get('/subscriptions');
-      const sub = res.data.find(s => s._id === id);
-      if (sub) {
-        setSubscription(sub);
-      } else {
-        navigate('/dashboard');
-      }
-    } catch (error) {
-      console.error(error);
-      navigate('/dashboard');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleCancel = async () => {
     if (window.confirm('Are you sure you want to cancel this subscription?')) {
       try {
-        const res = await api.delete(`/subscriptions/${id}`);
-        setSubscription(res.data.subscription);
+        await api.delete(`/subscriptions/${id}`);
         toast.success('Subscription cancelled successfully');
+        await refreshAllData();
       } catch (error) {
         console.error('Failed to cancel', error);
         toast.error('Failed to cancel subscription');
@@ -70,12 +56,12 @@ const SubscriptionDetails = () => {
       const baseDate = new Date(subscription.expiryDate) > new Date() ? new Date(subscription.expiryDate) : new Date();
       baseDate.setDate(baseDate.getDate() + 30);
       
-      const res = await api.put(`/subscriptions/${id}`, {
+      await api.put(`/subscriptions/${id}`, {
         status: 'active',
         expiryDate: baseDate.toISOString()
       });
-      setSubscription(res.data);
       toast.success('Subscription renewed successfully!');
+      await refreshAllData();
     } catch (error) {
       console.error('Failed to renew', error);
       toast.error('Failed to renew subscription');
@@ -85,13 +71,13 @@ const SubscriptionDetails = () => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.put(`/subscriptions/${id}`, {
+      await api.put(`/subscriptions/${id}`, {
         ...editFormData,
         subscriptionCost: Number(editFormData.subscriptionCost)
       });
-      setSubscription(res.data);
       setIsEditModalOpen(false);
       toast.success('Subscription details updated!');
+      await refreshAllData();
     } catch (error) {
       console.error('Failed to update', error);
       toast.error('Failed to update subscription details');
