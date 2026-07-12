@@ -150,6 +150,12 @@ const updateSubscription = async (req, res, next) => {
 
     const oldCost = subscription.subscriptionCost;
     const oldStatus = subscription.status;
+    const oldPlanName = subscription.planName;
+    const oldSubscriptionType = subscription.subscriptionType;
+    const oldExpiryDate = subscription.expiryDate;
+    const oldEndDate = subscription.endDate;
+    const oldAutoRenewal = subscription.autoRenewal;
+    const oldAutoRenew = subscription.autoRenew;
 
     // Apply the updates to the document fields
     Object.assign(subscription, req.body);
@@ -190,12 +196,26 @@ const updateSubscription = async (req, res, next) => {
     // Generate appropriate notifications based on what changed
     const platformName = updatedSubscription.ottPlatformId ? updatedSubscription.ottPlatformId.name : 'Platform';
     
-    if (oldStatus !== 'active' && updatedSubscription.status === 'active') {
+    // Check if subscription was renewed (either status changed to active, or expiry date was extended)
+    const hasOldExpiry = oldExpiryDate ? new Date(oldExpiryDate).getTime() : 0;
+    const hasOldEnd = oldEndDate ? new Date(oldEndDate).getTime() : 0;
+    const newExpiry = updatedSubscription.expiryDate ? new Date(updatedSubscription.expiryDate).getTime() : 0;
+    const newEnd = updatedSubscription.endDate ? new Date(updatedSubscription.endDate).getTime() : 0;
+
+    const expiryExtended = (newExpiry > 0 && newExpiry > hasOldExpiry) ||
+                           (newEnd > 0 && newEnd > hasOldEnd);
+
+    const isRenewed = (oldStatus !== 'active' && updatedSubscription.status === 'active') || expiryExtended;
+
+    let notificationCreated = false;
+
+    if (isRenewed) {
       await Notification.create({
         userId: req.user._id,
         message: `Your subscription to ${platformName} has been renewed.`,
         type: 'renewed'
       });
+      notificationCreated = true;
     }
 
     if (oldCost < updatedSubscription.subscriptionCost) {
@@ -204,12 +224,30 @@ const updateSubscription = async (req, res, next) => {
         message: `Your ${platformName} plan has been upgraded. New cost: $${updatedSubscription.subscriptionCost}/mo.`,
         type: 'upgraded'
       });
+      notificationCreated = true;
     } else if (oldCost > updatedSubscription.subscriptionCost) {
       await Notification.create({
         userId: req.user._id,
         message: `Your ${platformName} plan has been downgraded. New cost: $${updatedSubscription.subscriptionCost}/mo.`,
         type: 'downgraded'
       });
+      notificationCreated = true;
+    }
+
+    // Fallback notification for general updates (e.g. changing plan name or auto-renew toggle without cost/expiry change)
+    if (!notificationCreated) {
+      const planChanged = (req.body.planName && req.body.planName !== oldPlanName) ||
+                          (req.body.subscriptionType && req.body.subscriptionType !== oldSubscriptionType);
+      const autoRenewalChanged = (req.body.autoRenewal !== undefined && req.body.autoRenewal !== oldAutoRenewal) ||
+                                 (req.body.autoRenew !== undefined && req.body.autoRenew !== oldAutoRenew);
+      
+      if (planChanged || autoRenewalChanged) {
+        await Notification.create({
+          userId: req.user._id,
+          message: `Subscription Updated: Your subscription details for ${platformName} have been updated.`,
+          type: 'added'
+        });
+      }
     }
 
     res.json(updatedSubscription);
@@ -238,11 +276,14 @@ const deleteSubscription = async (req, res, next) => {
     subscription.status = 'cancelled';
     await subscription.save();
 
-    // Decrement subscribers count
-    const platform = await OTTPlatform.findById(subscription.ottPlatformId);
-    if (platform && platform.subscribers > 0) {
-      platform.subscribers -= 1;
-      await platform.save();
+    // Decrement subscribers count safely using raw platformId or fallback
+    const platformId = subscription.platformId || (subscription.ottPlatformId ? subscription.ottPlatformId._id : null);
+    if (platformId) {
+      const platform = await OTTPlatform.findById(platformId);
+      if (platform && platform.subscribers > 0) {
+        platform.subscribers -= 1;
+        await platform.save();
+      }
     }
 
     // Update user premium status
