@@ -15,9 +15,6 @@ build/
 # Testing coverage reports
 coverage/
 
-# Local dynamic image uploads (platform logos)
-uploads/
-backend/public/uploads/
 
 # Operating system artifacts
 .DS_Store
