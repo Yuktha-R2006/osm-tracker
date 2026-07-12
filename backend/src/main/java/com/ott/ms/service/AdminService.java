@@ -177,6 +177,7 @@ public class AdminService {
                     subMap.put("renewalCount", s.getRenewalCount() != null ? s.getRenewalCount() : 0);
                     subMap.put("activeDays", subActiveDays);
                     subMap.put("cancelled", cancelled);
+                    subMap.put("autoRenew", Boolean.TRUE.equals(s.getAutoRenew()) || Boolean.TRUE.equals(s.getAutoRenewal()));
                     
                     allSubs.add(subMap);
                 }
@@ -451,10 +452,15 @@ public class AdminService {
                 })
                 .collect(Collectors.toList());
 
-        // Renewals count
+        // Renewals count (number of active subscriptions with auto-renewal enabled)
         long subscriptionRenewals = allSubs.stream()
-                .mapToLong(s -> (Integer) s.get("renewalCount"))
-                .sum();
+                .filter(s -> {
+                    String status = (String) s.get("status");
+                    boolean cancelled = (Boolean) s.get("cancelled");
+                    boolean active = "active".equalsIgnoreCase(status) && !cancelled;
+                    return active && Boolean.TRUE.equals(s.get("autoRenew"));
+                })
+                .count();
 
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalUsers", totalUsers);
