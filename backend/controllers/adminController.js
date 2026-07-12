@@ -2,7 +2,7 @@ const User = require('../models/UserModel');
 const Subscription = require('../models/SubscriptionModel');
 const OTTPlatform = require('../models/PlatformModel');
 
-const BASE_DATE_MS = new Date('2026-05-23T14:00:00.000Z').getTime();
+const getBaseDateMs = () => Date.now();
 
 const isSubscriptionActive = (sub) => {
   const status = sub.status || 'active';
@@ -36,7 +36,7 @@ const enrichUsersWithSubscriptions = async (usersList) => {
           hasActivePremium = true;
         }
         
-        const days = Math.max(0, Math.ceil((BASE_DATE_MS - new Date(sub.startDate).getTime()) / (1000 * 60 * 60 * 24)));
+        const days = Math.max(0, Math.ceil((getBaseDateMs() - new Date(sub.startDate).getTime()) / (1000 * 60 * 60 * 24)));
         const platformName = sub.ottPlatformId ? sub.ottPlatformId.name : 'Netflix';
         platformActiveDays[platformName] = (platformActiveDays[platformName] || 0) + days;
       }
@@ -59,7 +59,7 @@ const enrichUsersWithSubscriptions = async (usersList) => {
     }
     
     const activeSubscriptionDays = earliestStartDate 
-      ? Math.max(0, Math.ceil((BASE_DATE_MS - new Date(earliestStartDate).getTime()) / (1000 * 60 * 60 * 24)))
+      ? Math.max(0, Math.ceil((getBaseDateMs() - new Date(earliestStartDate).getTime()) / (1000 * 60 * 60 * 24)))
       : 0;
 
     return {
@@ -98,7 +98,7 @@ const getStats = async (req, res, next) => {
           }
           const pName = platformName === 'Unknown' ? 'Netflix' : platformName;
           
-          const subActiveDays = Math.max(0, Math.ceil((BASE_DATE_MS - new Date(s.startDate).getTime()) / (1000 * 60 * 60 * 24)));
+          const subActiveDays = Math.max(0, Math.ceil((getBaseDateMs() - new Date(s.startDate).getTime()) / (1000 * 60 * 60 * 24)));
           const cancelled = s.isCancelled === true || s.status === 'cancelled';
           
           allSubs.push({
@@ -177,7 +177,7 @@ const getStats = async (req, res, next) => {
         }
         platformStats[s.platformName].subscribers++;
         const startDateMs = new Date(s.startDate).getTime();
-        if (BASE_DATE_MS - startDateMs <= 30 * 24 * 60 * 60 * 1000) {
+        if (getBaseDateMs() - startDateMs <= 30 * 24 * 60 * 60 * 1000) {
           platformStats[s.platformName].recentCount++;
         }
       }
@@ -242,13 +242,12 @@ const getStats = async (req, res, next) => {
         value: p.subscribers
       }));
        
-    const monthNames = ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'];
     const barData = [];
     const areaData = [];
     
     // Let's generate the last 6 months chronologically (oldest to newest)
     for (let i = 5; i >= 0; i--) {
-      const d = new Date(BASE_DATE_MS);
+      const d = new Date(getBaseDateMs());
       d.setMonth(d.getMonth() - i);
       const year = d.getFullYear();
       const monthIndex = d.getMonth();
@@ -256,7 +255,7 @@ const getStats = async (req, res, next) => {
       const startOfMonth = new Date(year, monthIndex, 1);
       const endOfMonth = new Date(year, monthIndex + 1, 0, 23, 59, 59, 999);
       
-      const monthLabel = monthNames[5 - i] || d.toLocaleDateString('en-US', { month: 'short' });
+      const monthLabel = d.toLocaleString('en-US', { month: 'short' });
       const monthData = { name: monthLabel };
       
       let activeCount = 0;
@@ -381,8 +380,17 @@ const deleteUser = async (req, res, next) => {
       return res.status(404).json({ message: 'User not found' });
     }
     
+    // Find platforms of the user's subscriptions before deleting them
+    const userSubscriptions = await Subscription.find({ userId: user._id });
+    const platformIds = [...new Set(userSubscriptions.map(s => s.platformId || s.ottPlatformId).filter(Boolean))];
+    
     // Delete user subscriptions
     await Subscription.deleteMany({ userId: user._id });
+    
+    // Recalculate subscriber counts for those platforms
+    for (let platformId of platformIds) {
+      await OTTPlatform.updateSubscribersCount(platformId);
+    }
     
     await user.deleteOne();
     res.json({ message: 'User removed' });
@@ -472,7 +480,7 @@ const runBillingCron = async (req, res, next) => {
     const totalSubscriptions = await Subscription.countDocuments({});
     logs.push(`Validating ${totalSubscriptions} subscription entries...`);
     
-    const referenceDate = new Date('2026-05-23T14:00:00.000Z');
+    const referenceDate = new Date();
     
     // Find active subscriptions past end date
     const pastActiveSubs = await Subscription.find({

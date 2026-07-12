@@ -99,6 +99,37 @@ subscriptionSchema.pre('save', function() {
   }
 });
 
+// Static method to update user premium status based on active premium subscriptions
+subscriptionSchema.statics.updateUserPremiumStatus = async function(userId) {
+  const activePremiumSubs = await this.countDocuments({
+    userId,
+    status: 'active',
+    isPremium: true
+  });
+  const User = mongoose.model('User');
+  const user = await User.findById(userId);
+  if (user) {
+    user.membershipType = activePremiumSubs > 0 ? 'premium' : 'standard';
+    await user.save();
+  }
+};
+
+// Post-save hook to automatically synchronize user premium status and platform statistics
+subscriptionSchema.post('save', async function(doc) {
+  try {
+    const Subscription = mongoose.model('Subscription');
+    await Subscription.updateUserPremiumStatus(doc.userId);
+    
+    const Platform = mongoose.model('Platform');
+    const platformId = doc.platformId || doc.ottPlatformId;
+    if (platformId) {
+      await Platform.updateSubscribersCount(platformId);
+    }
+  } catch (err) {
+    console.error('Error in Subscription post-save hook:', err);
+  }
+});
+
 const Subscription = mongoose.model('Subscription', subscriptionSchema);
 
 // Fallback registration to prevent ref errors

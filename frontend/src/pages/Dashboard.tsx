@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, PlaySquare, CheckCircle, AlertCircle, Clock, Search, Tv } from 'lucide-react';
+import { Plus, PlaySquare, CheckCircle, AlertCircle, Clock, Search, Tv, XCircle } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import SubscriptionCard from '../components/SubscriptionCard';
 import AddSubscriptionModal from '../components/AddSubscriptionModal';
@@ -40,9 +40,7 @@ const Dashboard = () => {
     return daysRemaining > 0 && daysRemaining <= 3;
   }).length;
 
-  // Format watch time
-  const watchTimeHours = user?.totalWatchTime ? Math.round(user.totalWatchTime / 60) : 0;
-  const watchTimeStr = `${watchTimeHours} hrs`;
+  const cancelledCount = subscriptions.filter(s => s.status === 'cancelled').length;
 
   const getPlatformTheme = (platformName: string) => {
     const name = platformName.toLowerCase();
@@ -108,10 +106,10 @@ const Dashboard = () => {
           color="#f59e0b"
         />
         <StatCard
-          title="Total Watch Time"
-          value={watchTimeStr}
-          icon={<Clock size={24} />}
-          color="#a855f7"
+          title="Cancelled Plans"
+          value={cancelledCount}
+          icon={<XCircle size={24} />}
+          color="#ef4444"
         />
       </div>
 

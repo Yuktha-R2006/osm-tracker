@@ -15,19 +15,6 @@ const isPlanPremium = (platformName, planName) => {
   return false;
 };
 
-const updateUserPremiumStatus = async (userId) => {
-  const activePremiumSubs = await Subscription.countDocuments({
-    userId,
-    status: 'active',
-    isPremium: true
-  });
-  const user = await User.findById(userId);
-  if (user) {
-    user.membershipType = activePremiumSubs > 0 ? 'premium' : 'standard';
-    await user.save();
-  }
-};
-
 // @desc    Get user subscriptions
 // @route   GET /api/subscriptions
 // @access  Private
@@ -86,12 +73,6 @@ const createSubscription = async (req, res, next) => {
       subscription.isCancelled = false;
 
       await subscription.save();
-
-      // Update subscribers count if it was not active
-      if (!wasActive) {
-        platform.subscribers += 1;
-        await platform.save();
-      }
     } else {
       subscription = await Subscription.create({
         userId: req.user._id,
@@ -107,14 +88,7 @@ const createSubscription = async (req, res, next) => {
         autoRenew: autoRenewal,
         isPremium
       });
-
-      // Update subscribers count
-      platform.subscribers += 1;
-      await platform.save();
     }
-
-    // Update user premium status
-    await updateUserPremiumStatus(req.user._id);
 
     // Auto-generate notification
     await Notification.create({
@@ -172,23 +146,7 @@ const updateSubscription = async (req, res, next) => {
     // Save the document to trigger pre-save hooks
     await subscription.save();
 
-    // If status changed from active to cancelled/expired, or vice-versa, update the platform's subscribers count
-    if (oldStatus === 'active' && subscription.status !== 'active') {
-      const platform = await OTTPlatform.findById(subscription.ottPlatformId || subscription.platformId);
-      if (platform && platform.subscribers > 0) {
-        platform.subscribers -= 1;
-        await platform.save();
-      }
-    } else if (oldStatus !== 'active' && subscription.status === 'active') {
-      const platform = await OTTPlatform.findById(subscription.ottPlatformId || subscription.platformId);
-      if (platform) {
-        platform.subscribers += 1;
-        await platform.save();
-      }
-    }
-
-    // Update user premium status
-    await updateUserPremiumStatus(req.user._id);
+    // Platform subscribers and user premium status are updated automatically via the Subscription pre/post-save hooks.
 
     // Populate after save
     const updatedSubscription = await Subscription.findById(subscription._id).populate('ottPlatformId');
@@ -276,18 +234,7 @@ const deleteSubscription = async (req, res, next) => {
     subscription.status = 'cancelled';
     await subscription.save();
 
-    // Decrement subscribers count safely using raw platformId or fallback
-    const platformId = subscription.platformId || (subscription.ottPlatformId ? subscription.ottPlatformId._id : null);
-    if (platformId) {
-      const platform = await OTTPlatform.findById(platformId);
-      if (platform && platform.subscribers > 0) {
-        platform.subscribers -= 1;
-        await platform.save();
-      }
-    }
-
-    // Update user premium status
-    await updateUserPremiumStatus(req.user._id);
+    // Platform subscribers and user premium status are updated automatically via the Subscription pre/post-save hooks.
 
     await Notification.create({
       userId: req.user._id,

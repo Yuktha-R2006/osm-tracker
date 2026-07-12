@@ -32,6 +32,26 @@ platformSchema.virtual('subscribers')
   .get(function() { return this.activeSubscribers; })
   .set(function(val) { this.activeSubscribers = val; });
 
+platformSchema.statics.updateSubscribersCount = async function(platformId) {
+  const Subscription = mongoose.model('Subscription');
+  const activeCount = await Subscription.countDocuments({
+    $or: [{ platformId }, { ottPlatformId: platformId }],
+    status: 'active'
+  });
+  const premiumCount = await Subscription.countDocuments({
+    $or: [{ platformId }, { ottPlatformId: platformId }],
+    status: 'active',
+    isPremium: true
+  });
+  
+  const platform = await this.findById(platformId);
+  if (platform) {
+    platform.activeSubscribers = activeCount;
+    platform.premiumUsers = premiumCount;
+    await platform.save();
+  }
+};
+
 const Platform = mongoose.model('Platform', platformSchema);
 
 try {
