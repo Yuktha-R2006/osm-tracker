@@ -106,10 +106,24 @@ const UserManagement = () => {
     }
   };
 
-  const filteredUsers = users.filter(user => 
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = [...(users || [])]
+    .filter(user => {
+      const search = searchTerm.toLowerCase();
+      const nameMatch = (user.name || '').toLowerCase().includes(search);
+      const emailMatch = (user.email || '').toLowerCase().includes(search);
+      const tierMatch = (user.isPremium ? 'premium' : 'standard').includes(search) || 
+                         (user.membershipType || '').toLowerCase().includes(search);
+      const idMatch = user.numericId ? `#${user.numericId}`.includes(search) || String(user.numericId).includes(search) : false;
+      return nameMatch || emailMatch || tierMatch || idMatch;
+    })
+    .sort((a, b) => {
+      if (a.numericId !== undefined && b.numericId !== undefined && a.numericId !== null && b.numericId !== null) {
+        return a.numericId - b.numericId;
+      }
+      const idA = a.id || a._id || '';
+      const idB = b.id || b._id || '';
+      return idA.localeCompare(idB);
+    });
 
   const getInitials = (name: string) => {
     return name

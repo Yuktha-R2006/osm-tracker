@@ -106,6 +106,7 @@ public class AdminService {
             Map<String, Object> map = new HashMap<>();
             map.put("id", user.getId());
             map.put("_id", user.getId());
+            map.put("numericId", user.getNumericId());
             map.put("name", user.getName());
             map.put("email", user.getEmail());
             map.put("role", user.getRole());
@@ -441,6 +442,7 @@ public class AdminService {
                     Map<String, Object> map = new HashMap<>();
                     map.put("id", u.get("id"));
                     map.put("_id", u.get("id"));
+                    map.put("numericId", u.get("numericId"));
                     map.put("name", u.get("name"));
                     map.put("email", u.get("email"));
                     map.put("avatar", u.get("avatar"));
