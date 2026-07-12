@@ -25,19 +25,7 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-
-    // Normalize origins by stripping trailing slashes for comparison
-    const cleanOrigin = origin.replace(/\/$/, '');
-    const cleanAllowed = allowedOrigins.map(o => o.replace(/\/$/, ''));
-
-    if (cleanAllowed.includes(cleanOrigin)) {
-      return callback(null, true);
-    }
-
-    return callback(new Error(`CORS policy match error for origin: ${origin}`), false);
-  },
+  origin: "https://ott-tracker.vercel.app",
   credentials: true
 }));
 app.use(express.json());
