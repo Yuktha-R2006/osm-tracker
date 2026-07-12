@@ -25,7 +25,10 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 app.use(cors({
-  origin: "https://osm-tracker.vercel.app",
+  origin: [
+    "http://localhost:5173",
+    "https://your-project.vercel.app"
+  ],
   credentials: true
 }));
 app.use(express.json());
