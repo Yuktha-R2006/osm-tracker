@@ -445,6 +445,7 @@ public class AdminService {
                     map.put("email", u.get("email"));
                     map.put("avatar", u.get("avatar"));
                     map.put("profileImage", u.get("profileImage"));
+                    map.put("subscriptionCount", u.get("subscriptionCount"));
                     map.put("activeSubscriptionsCount", u.get("activeSubscriptionsCount"));
                     map.put("activeSubscriptionDays", u.get("activeSubscriptionDays"));
                     map.put("totalRenewals", u.get("totalRenewals"));
